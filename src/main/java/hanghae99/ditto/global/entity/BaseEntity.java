@@ -19,14 +19,14 @@ public abstract class BaseEntity {
     private Long id;
 
     @CreatedDate
-    @Column(name = "create_date", updatable = false)
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @LastModifiedDate
-    @Column(name = "update_date")
+    @Column(name = "update_date", nullable = false)
     private LocalDateTime updateDate;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     protected UsageStatus status;
 

@@ -4,6 +4,7 @@ import hanghae99.ditto.global.entity.BaseEntity;
 import hanghae99.ditto.global.entity.UsageStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9._-]+@[a-z]+[.]+[a-z]{2,3}$");
     private static final int MAX_NAME_LENGTH = 25;
