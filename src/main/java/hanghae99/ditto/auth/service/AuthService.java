@@ -5,9 +5,11 @@ import hanghae99.ditto.auth.domain.MemberAuthenticationCodeRepository;
 import hanghae99.ditto.auth.dto.request.AuthenticateCodeRequest;
 import hanghae99.ditto.auth.dto.request.SendEmailAuthenticationRequest;
 import hanghae99.ditto.auth.dto.response.EmailAuthenticationResponse;
+import hanghae99.ditto.auth.support.JwtTokenProvider;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
+import hanghae99.ditto.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpEntity;
@@ -26,6 +28,9 @@ public class AuthService {
     private final MemberAuthenticationCodeRepository memberAuthenticationCodeRepository;
     private final MemberRepository memberRepository;
     private final EmailService emailService;
+
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public HttpEntity<?> sendEmailAuthentication(SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
@@ -95,9 +100,11 @@ public class AuthService {
             });
             member.verifiedWithEmail();
 
+            // jwt token 발급
+            String accessToken = jwtTokenProvider.createToken(String.valueOf(member.getId()));
 
             return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(0, "인증 성공"), HttpStatus.OK
+                    new EmailAuthenticationResponse(0, accessToken), HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(
