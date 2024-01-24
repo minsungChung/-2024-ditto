@@ -1,19 +1,8 @@
 package hanghae99.ditto.member.service;
 
-import hanghae99.ditto.member.domain.Member;
-import hanghae99.ditto.member.domain.MemberRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import hanghae99.ditto.member.dto.request.MemberJoinRequest;
+import hanghae99.ditto.member.dto.response.MemberJoinResponse;
 
-import java.time.LocalDateTime;
-
-@Service
-@RequiredArgsConstructor
-public class MemberService {
-
-    private final MemberRepository memberRepository;
-
-    public Member saveMember(Member member){
-        return memberRepository.save(member);
-    }
+public interface MemberService {
+    MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest);
 }

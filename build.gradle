@@ -24,6 +24,16 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// password encoder
+	implementation 'org.springframework.security:spring-security-crypto'
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// string auto generate
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	//thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
