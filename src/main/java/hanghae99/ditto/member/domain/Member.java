@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9._-]+@[a-z]+[.]+[a-z]{2,3}$");
-    private static final int MAX_NAME_LENGTH = 25;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -38,10 +36,6 @@ public class Member extends BaseEntity {
     private LocalDateTime lastLogin;
 
     public Member(String email, String password, String memberName, String profileImage, String bio, LocalDateTime lastLogin){
-
-        validateEmail(email);
-        validateMemberName(memberName);
-
         this.email = email;
         this.password = password;
         this.memberName = memberName;
@@ -53,18 +47,5 @@ public class Member extends BaseEntity {
 
     public void verifiedWithEmail(){
         this.status = UsageStatus.ACTIVE;
-    }
-
-    private void validateMemberName(String memberName) {
-        if (memberName.isEmpty() || memberName.length() > MAX_NAME_LENGTH){
-            throw new IllegalArgumentException(String.format("이름은 1자 이상 %d자 이하여야 합니다.", MAX_NAME_LENGTH));
-        }
-    }
-
-    private void validateEmail(String email) {
-        Matcher matcher = EMAIL_PATTERN.matcher(email);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
-        }
     }
 }
