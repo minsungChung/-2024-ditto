@@ -48,6 +48,10 @@ public class Member extends BaseEntity {
         this.profileImage = profileImage;
         this.bio = bio;
         this.lastLogin = lastLogin;
+        this.status = UsageStatus.NOT_EMAIL_AUTH;
+    }
+
+    public void verifiedWithEmail(){
         this.status = UsageStatus.ACTIVE;
     }
 

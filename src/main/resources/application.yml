@@ -18,4 +18,21 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: als0318tjd
+    password: nghb sgcu uzyz syzc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection-timeout: 5000
+          timeout: 5000
+          write-timeout: 5000
+    auth-code-expiration-millis: 1800000
+
 
