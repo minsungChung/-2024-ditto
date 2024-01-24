@@ -4,7 +4,6 @@ import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.member.dto.request.MemberJoinRequest;
 import hanghae99.ditto.member.dto.response.MemberJoinResponse;
-import hanghae99.ditto.member.exception.NoSuchMemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,14 +26,5 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(member);
         return new MemberJoinResponse(savedMember);
-    }
-
-    public Member findByEmail(final String email){
-        return memberRepository.findByEmail(email)
-                .orElseThrow(NoSuchMemberException::new);
-    }
-
-    public boolean existsByEmail(String email){
-        return memberRepository.existsByEmail(email);
     }
 }

@@ -3,18 +3,22 @@ package hanghae99.ditto.auth.service;
 import hanghae99.ditto.auth.domain.MemberAuthenticationCodeEntity;
 import hanghae99.ditto.auth.domain.MemberAuthenticationCodeRepository;
 import hanghae99.ditto.auth.dto.request.AuthenticateCodeRequest;
+import hanghae99.ditto.auth.dto.request.LoginRequest;
+import hanghae99.ditto.auth.dto.request.LogoutRequest;
 import hanghae99.ditto.auth.dto.request.SendEmailAuthenticationRequest;
 import hanghae99.ditto.auth.dto.response.EmailAuthenticationResponse;
+import hanghae99.ditto.auth.dto.response.LoginResponse;
 import hanghae99.ditto.auth.support.JwtTokenProvider;
+import hanghae99.ditto.auth.support.RedisUtil;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
-import hanghae99.ditto.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +33,9 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final EmailService emailService;
 
-    private final MemberService memberService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisUtil redisUtil;
 
     @Transactional
     public HttpEntity<?> sendEmailAuthentication(SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
@@ -100,17 +105,42 @@ public class AuthService {
             });
             member.verifiedWithEmail();
 
-            // jwt token 발급
-            String accessToken = jwtTokenProvider.createToken(String.valueOf(member.getId()));
-
             return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(0, accessToken), HttpStatus.OK
+                    new EmailAuthenticationResponse(0, "인증 성공"), HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(
                     new EmailAuthenticationResponse(-1, "인증 실패"), HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    public HttpEntity<?> login(LoginRequest loginRequest){
+        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> {
+           throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
+        });
+
+        if(!bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())){
+            return new ResponseEntity<>(
+                    new LoginResponse(null, "로그인 실패"), HttpStatus.BAD_REQUEST
+            );
+        } else{
+            String accessToken = jwtTokenProvider.createToken(String.valueOf(member.getId()));
+            return new ResponseEntity<>(
+                    new LoginResponse(member.getId(), accessToken), HttpStatus.OK
+            );
+        }
+    }
+
+    public HttpEntity<?> logout(LogoutRequest logoutRequest){
+        if(!jwtTokenProvider.validateToken(logoutRequest.getToken())){
+            return new ResponseEntity<>(
+                new LoginResponse(0L, "이미 로그아웃한 멤버입니다."), HttpStatus.BAD_REQUEST);
+        }
+        redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
+        return new ResponseEntity<>(
+                new LoginResponse(1L, "로그아웃 완료"), HttpStatus.OK
+        );
     }
 
 }
