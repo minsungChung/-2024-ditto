@@ -1,4 +1,4 @@
-package hanghae99.ditto.auth.support;
+package hanghae99.ditto.auth.support.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

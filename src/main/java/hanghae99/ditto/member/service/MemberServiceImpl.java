@@ -18,11 +18,14 @@ public class MemberServiceImpl implements MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest){
-        String pwd = memberJoinRequest.getPassword();
-        pwd = bCryptPasswordEncoder.encode(pwd);
 
-        Member member = new Member(memberJoinRequest.getEmail(), pwd, memberJoinRequest.getMemberName(),
-                memberJoinRequest.getProfileImage(), memberJoinRequest.getBio(), LocalDateTime.now());
+        Member member = Member.builder()
+                .email(memberJoinRequest.getEmail())
+                .password(bCryptPasswordEncoder.encode(memberJoinRequest.getPassword()))
+                .memberName(memberJoinRequest.getMemberName())
+                .profileImage(memberJoinRequest.getProfileImage())
+                .bio(memberJoinRequest.getBio())
+                .lastLogin(LocalDateTime.now()).build();
 
         Member savedMember = memberRepository.save(member);
         return new MemberJoinResponse(savedMember);

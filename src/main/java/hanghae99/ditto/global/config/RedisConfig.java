@@ -1,6 +1,6 @@
 package hanghae99.ditto.global.config;
 
-import hanghae99.ditto.auth.support.RedisProperties;
+import hanghae99.ditto.auth.support.redis.RedisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
