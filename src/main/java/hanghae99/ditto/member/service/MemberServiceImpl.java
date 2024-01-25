@@ -20,8 +20,10 @@ public class MemberServiceImpl implements MemberService {
     public MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest){
         String pwd = memberJoinRequest.getPassword();
         pwd = bCryptPasswordEncoder.encode(pwd);
+
         Member member = new Member(memberJoinRequest.getEmail(), pwd, memberJoinRequest.getMemberName(),
                 memberJoinRequest.getProfileImage(), memberJoinRequest.getBio(), LocalDateTime.now());
+
         Member savedMember = memberRepository.save(member);
         return new MemberJoinResponse(savedMember);
     }

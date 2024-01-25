@@ -34,3 +34,15 @@ spring:
           timeout: 5000
           write-timeout: 5000
     auth-code-expiration-millis: 1800000
+  redis:
+    pool:
+      min-idle: 0
+      max-idle: 8
+      max-active: 8
+    port: 6379
+    host: localhost
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET_KEY}
+      expire-length: ${JWT_EXPIRE_LENGTH}
