@@ -8,8 +8,8 @@ import hanghae99.ditto.auth.dto.request.LogoutRequest;
 import hanghae99.ditto.auth.dto.request.SendEmailAuthenticationRequest;
 import hanghae99.ditto.auth.dto.response.EmailAuthenticationResponse;
 import hanghae99.ditto.auth.dto.response.LoginResponse;
-import hanghae99.ditto.auth.support.JwtTokenProvider;
-import hanghae99.ditto.auth.support.RedisUtil;
+import hanghae99.ditto.auth.support.jwt.JwtTokenProvider;
+import hanghae99.ditto.auth.support.redis.RedisUtil;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
@@ -125,7 +125,7 @@ public class AuthService {
                     new LoginResponse(null, "로그인 실패"), HttpStatus.BAD_REQUEST
             );
         } else{
-            String accessToken = jwtTokenProvider.createToken(String.valueOf(member.getId()));
+            String accessToken = jwtTokenProvider.createToken(member.getId());
             return new ResponseEntity<>(
                     new LoginResponse(member.getId(), accessToken), HttpStatus.OK
             );

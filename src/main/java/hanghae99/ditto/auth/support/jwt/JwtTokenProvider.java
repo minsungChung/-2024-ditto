@@ -1,6 +1,7 @@
-package hanghae99.ditto.auth.support;
+package hanghae99.ditto.auth.support.jwt;
 
 import hanghae99.ditto.auth.exception.InvalidTokenException;
+import hanghae99.ditto.auth.support.redis.RedisUtil;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -25,25 +26,31 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String payload){
+    public String createToken(Long memberId){
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(payload)
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    public String getPayload(String token){
+    public Long getMemberId(String token){
+        return parseClaims(token).get("memberId", Long.class);
+    }
+
+    public Claims parseClaims(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public boolean validateToken(String token){
