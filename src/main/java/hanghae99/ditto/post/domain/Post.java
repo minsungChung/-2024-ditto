@@ -1,21 +1,18 @@
 package hanghae99.ditto.post.domain;
 
 import hanghae99.ditto.global.entity.BaseEntity;
+import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Post extends BaseEntity {
 
     @ManyToOne
@@ -35,5 +32,13 @@ public class Post extends BaseEntity {
     @Column(name = "views", nullable = false)
     @ColumnDefault("0")
     private long views;
+
+    @Builder
+    public Post(Member member, String title, String content){
+        this.member = member;
+        this.title = title;
+        this.content = content;
+        this.status = UsageStatus.ACTIVE;
+    }
 
 }
