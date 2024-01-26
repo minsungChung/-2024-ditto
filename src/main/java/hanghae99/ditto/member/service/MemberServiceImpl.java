@@ -19,15 +19,19 @@ public class MemberServiceImpl implements MemberService {
 
     public MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest){
 
-        Member member = Member.builder()
-                .email(memberJoinRequest.getEmail())
-                .password(bCryptPasswordEncoder.encode(memberJoinRequest.getPassword()))
-                .memberName(memberJoinRequest.getMemberName())
-                .profileImage(memberJoinRequest.getProfileImage())
-                .bio(memberJoinRequest.getBio())
-                .lastLogin(LocalDateTime.now()).build();
+        if (memberRepository.existsByEmail(memberJoinRequest.getEmail())){
+            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+        }else {
+            Member member = Member.builder()
+                    .email(memberJoinRequest.getEmail())
+                    .password(bCryptPasswordEncoder.encode(memberJoinRequest.getPassword()))
+                    .memberName(memberJoinRequest.getMemberName())
+                    .profileImage(memberJoinRequest.getProfileImage())
+                    .bio(memberJoinRequest.getBio())
+                    .lastLogin(LocalDateTime.now()).build();
 
-        Member savedMember = memberRepository.save(member);
-        return new MemberJoinResponse(savedMember);
+            Member savedMember = memberRepository.save(member);
+            return new MemberJoinResponse(savedMember);
+        }
     }
 }
