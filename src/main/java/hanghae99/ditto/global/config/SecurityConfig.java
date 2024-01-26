@@ -27,7 +27,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/members", "/api/auth/email-authentication", "/api/auth/authentication-code", "/api/auth/login"
+            "/api/members", "/api/auth/email-authentication", "/api/auth/authentication-code", "/api/auth/login",
+            "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers"
     };
     @Bean
     public BCryptPasswordEncoder encodePwd(){

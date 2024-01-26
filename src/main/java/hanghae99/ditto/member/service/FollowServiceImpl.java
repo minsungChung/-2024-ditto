@@ -6,10 +6,14 @@ import hanghae99.ditto.member.domain.FollowRepository;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.member.dto.response.FollowResponse;
+import hanghae99.ditto.member.dto.response.FollowMemberResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,20 @@ public class FollowServiceImpl implements FollowService{
         }
 
         return new FollowResponse(follow.getFromMember(), follow.getToMember());
+    }
+
+    public List<FollowMemberResponse> getFollowings(Long memberId){
+        List<FollowMemberResponse> followingList = followRepository.findAllByFromMemberId(memberId).stream()
+                .filter(follow -> follow.getStatus().equals(UsageStatus.ACTIVE)).map(
+                follow -> new FollowMemberResponse(follow.getToMember())).collect(Collectors.toList());
+        return followingList;
+    }
+
+    public List<FollowMemberResponse> getFollowers(Long memberId){
+        List<FollowMemberResponse> followingList = followRepository.findAllByToMemberId(memberId).stream()
+                .filter(follow -> follow.getStatus().equals(UsageStatus.ACTIVE)).map(
+                follow -> new FollowMemberResponse(follow.getFromMember())).collect(Collectors.toList());
+        return followingList;
     }
 
 }
