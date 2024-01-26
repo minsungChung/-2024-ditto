@@ -115,6 +115,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public HttpEntity<?> login(LoginRequest loginRequest){
         Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> {
            throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
@@ -126,6 +127,7 @@ public class AuthService {
             );
         } else{
             String accessToken = jwtTokenProvider.createToken(member.getId());
+            member.updateLastLogin();
             return new ResponseEntity<>(
                     new LoginResponse(member.getId(), accessToken), HttpStatus.OK
             );
@@ -133,10 +135,6 @@ public class AuthService {
     }
 
     public HttpEntity<?> logout(LogoutRequest logoutRequest){
-        if(!jwtTokenProvider.validateToken(logoutRequest.getToken())){
-            return new ResponseEntity<>(
-                new LoginResponse(0L, "이미 로그아웃한 멤버입니다."), HttpStatus.BAD_REQUEST);
-        }
         redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
         return new ResponseEntity<>(
                 new LoginResponse(1L, "로그아웃 완료"), HttpStatus.OK

@@ -55,6 +55,18 @@ public class Member extends BaseEntity implements UserDetails {
         this.status = UsageStatus.ACTIVE;
     }
 
+    public void updateLastLogin() { this.lastLogin = LocalDateTime.now(); }
+
+    public void updateMemberExtraInfo(String memberName, String profileImage, String bio){
+        this.memberName = memberName;
+        this.profileImage = profileImage;
+        this.bio = bio;
+    }
+
+    public void updateMemberPassword(String password){
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
