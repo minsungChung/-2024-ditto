@@ -4,10 +4,7 @@ import hanghae99.ditto.post.service.PostService;
 import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,5 +16,20 @@ public class PostController {
     @PostMapping
     public PostResponse uploadPost(@RequestBody PostRequest postRequest){
         return postService.uploadPost(postRequest);
+    }
+
+    @GetMapping("/{postId}")
+    public PostResponse getPost(@PathVariable("postId") Long postId){
+        return postService.getPost(postId);
+    }
+
+    @PatchMapping("/{postId}")
+    public PostResponse updatePost(@PathVariable("postId") Long postId, @RequestBody PostRequest postRequest){
+        return postService.updatePost(postId, postRequest);
+    }
+
+    @DeleteMapping("/{postId}")
+    public PostResponse deletePost(@PathVariable("postId") Long postId){
+        return postService.deletePost(postId);
     }
 }

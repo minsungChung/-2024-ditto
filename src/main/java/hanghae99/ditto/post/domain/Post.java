@@ -41,4 +41,13 @@ public class Post extends BaseEntity {
         this.status = UsageStatus.ACTIVE;
     }
 
+    public void updatePost(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
+
+    public void deletePost(){
+        this.status = UsageStatus.DELETED;
+    }
+
 }
