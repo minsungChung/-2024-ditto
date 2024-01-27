@@ -1,5 +1,6 @@
 package hanghae99.ditto.post.controller;
 
+import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.service.PostService;
 import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostResponse;
@@ -32,4 +33,11 @@ public class PostController {
     public PostResponse deletePost(@PathVariable("postId") Long postId){
         return postService.deletePost(postId);
     }
+
+    @PostMapping("/{postId}/like")
+    public PostLikeResponse pushPostLike(@PathVariable("postId") Long postId){
+        return postService.pushPostLike(postId);
+    }
+
+
 }
