@@ -121,6 +121,10 @@ public class AuthService {
            throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
         });
 
+        if(member.getStatus().equals(UsageStatus.DELETED)){
+            throw new IllegalArgumentException("탈퇴한 계정입니다.");
+        }
+
         if(!bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())){
             return new ResponseEntity<>(
                     new LoginResponse(null, "로그인 실패"), HttpStatus.BAD_REQUEST
