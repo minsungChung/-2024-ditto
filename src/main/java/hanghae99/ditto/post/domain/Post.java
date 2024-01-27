@@ -50,4 +50,8 @@ public class Post extends BaseEntity {
         this.status = UsageStatus.DELETED;
     }
 
+    public void addView(){ this.views += 1;}
+
+    public void addLike(){ this.likes += 1;}
+
 }

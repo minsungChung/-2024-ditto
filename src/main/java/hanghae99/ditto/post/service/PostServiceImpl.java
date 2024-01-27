@@ -30,12 +30,18 @@ public class PostServiceImpl implements PostService {
         return new PostResponse(post);
     }
 
+    @Transactional
     public PostResponse getPost(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
         });
         if (isPostDeleted(post)){
             throw new IllegalArgumentException("삭제된 게시글입니다.");
+        }
+
+        // 조회한 사람이 자신이 아닐 때 조회수 1 높임
+        if (!checkAuthenticated(post.getMember().getId())){
+            post.addView();
         }
         return new PostResponse(post);
     }
@@ -48,9 +54,8 @@ public class PostServiceImpl implements PostService {
         if (isPostDeleted(post)){
             throw new IllegalArgumentException("삭제된 게시글입니다.");
         }
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (post.getMember().getId().equals(member.getId())){
+        if (checkAuthenticated(post.getMember().getId())){
             post.updatePost(postRequest.getTitle(), postRequest.getContent());
         } else{
             throw new RuntimeException("권한이 없는 유저입니다.");
@@ -67,14 +72,21 @@ public class PostServiceImpl implements PostService {
         if (isPostDeleted(post)){
             throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
         }
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (post.getMember().getId().equals(member.getId())){
+        if (checkAuthenticated(post.getMember().getId())){
             post.deletePost();
         } else{
             throw new RuntimeException("권한이 없는 유저입니다.");
         }
         return new PostResponse(post);
+    }
+
+    public boolean checkAuthenticated(Long memberId){
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (member.getId().equals(memberId)){
+            return true;
+        }
+        return false;
     }
 
     public boolean isPostDeleted(Post post){
