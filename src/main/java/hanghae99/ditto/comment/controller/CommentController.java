@@ -1,6 +1,7 @@
 package hanghae99.ditto.comment.controller;
 
 import hanghae99.ditto.comment.dto.request.CommentRequest;
+import hanghae99.ditto.comment.dto.response.CommentLikeResponse;
 import hanghae99.ditto.comment.dto.response.CommentResponse;
 import hanghae99.ditto.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,11 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public CommentResponse deleteComment(@PathVariable("commentId") Long commentId){
         return commentService.deleteComment(commentId);
+    }
+
+    @PostMapping("/{commentId}/like")
+    public CommentLikeResponse pushCommentLike(@PathVariable("commentId") Long commentId){
+        return commentService.pushCommentLike(commentId);
     }
 
 

@@ -47,4 +47,12 @@ public class Comment extends BaseEntity {
         this.content = "삭제된 댓글입니다.";
         this.status = UsageStatus.DELETED;
     }
+
+    public void addLike(){
+        this.likes += 1;
+    }
+
+    public void subLike(){
+        this.likes -= 1;
+    }
 }

@@ -1,8 +1,11 @@
 package hanghae99.ditto.comment.service;
 
 import hanghae99.ditto.comment.domain.Comment;
+import hanghae99.ditto.comment.domain.CommentLike;
+import hanghae99.ditto.comment.domain.CommentLikeRepository;
 import hanghae99.ditto.comment.domain.CommentRepository;
 import hanghae99.ditto.comment.dto.request.CommentRequest;
+import hanghae99.ditto.comment.dto.response.CommentLikeResponse;
 import hanghae99.ditto.comment.dto.response.CommentResponse;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
@@ -23,6 +26,7 @@ public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public CommentResponse uploadComment(Long postId, CommentRequest commentRequest) {
@@ -78,6 +82,31 @@ public class CommentServiceImpl implements CommentService{
             throw new RuntimeException("권한이 없는 멤버입니다.");
         }
         return new CommentResponse(comment);
+    }
+
+    @Transactional
+    public CommentLikeResponse pushCommentLike(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
+            throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
+        });
+        if (isCommentDeleted(comment)){
+            throw new IllegalStateException("삭제된 댓글입니다.");
+        }
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(member.getId(), commentId).orElse(null);
+        if (commentLike != null){
+            if (commentLike.getStatus().equals(UsageStatus.ACTIVE)){
+                commentLike.deleteCommentLike();
+            } else {
+                commentLike.pushCommentLike();
+            }
+        } else {
+            commentLike = CommentLike.builder()
+                    .member(member)
+                    .comment(comment).build();
+            commentLikeRepository.save(commentLike);
+        }
+        return new CommentLikeResponse(commentLike);
     }
 
     public boolean checkAuthenticated(Long memberId){

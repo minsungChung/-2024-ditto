@@ -3,8 +3,11 @@ package hanghae99.ditto.post.service;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.post.domain.Post;
+import hanghae99.ditto.post.domain.PostLike;
+import hanghae99.ditto.post.domain.PostLikeRepository;
 import hanghae99.ditto.post.domain.PostRepository;
 import hanghae99.ditto.post.dto.request.PostRequest;
+import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     public PostResponse uploadPost(PostRequest postRequest) {
@@ -79,6 +83,32 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("권한이 없는 유저입니다.");
         }
         return new PostResponse(post);
+    }
+
+    @Transactional
+    public PostLikeResponse pushPostLike(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> {
+            throw new IllegalArgumentException("유효하지않은 게시글입니다.");
+        });
+        if (isPostDeleted(post)){
+            throw new IllegalArgumentException("삭제된 게시글에는 좋아요를 누를 수 없습니다.");
+        }
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        PostLike postLike = postLikeRepository.findByMemberIdAndPostId(member.getId(), postId).orElse(null);
+        if (postLike != null){
+            if (postLike.getStatus().equals(UsageStatus.ACTIVE)){
+                postLike.deletePostLike();
+            } else {
+                postLike.pushPostLike();
+            }
+        } else {
+            postLike = PostLike.builder()
+                    .member(member)
+                    .post(post).build();
+            postLikeRepository.save(postLike);
+        }
+
+        return new PostLikeResponse(postLike);
     }
 
     public boolean checkAuthenticated(Long memberId){

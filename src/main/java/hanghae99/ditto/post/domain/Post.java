@@ -54,4 +54,6 @@ public class Post extends BaseEntity {
 
     public void addLike(){ this.likes += 1;}
 
+    public void subLike() { this.likes -= 1;}
+
 }
