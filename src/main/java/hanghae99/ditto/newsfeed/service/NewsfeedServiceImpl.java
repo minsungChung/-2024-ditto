@@ -4,9 +4,13 @@ import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.newsfeed.domain.Newsfeed;
+import hanghae99.ditto.newsfeed.domain.NewsfeedPost;
+import hanghae99.ditto.newsfeed.domain.NewsfeedPostRepository;
 import hanghae99.ditto.newsfeed.domain.NewsfeedRepository;
 import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
 import hanghae99.ditto.newsfeed.dto.response.NewsfeedResponse;
+import hanghae99.ditto.post.domain.Post;
+import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,12 +26,29 @@ public class NewsfeedServiceImpl implements NewsfeedService{
 
     private final NewsfeedRepository newsfeedRepository;
     private final MemberRepository memberRepository;
+    private final NewsfeedPostRepository newsfeedPostRepository;
 
     public List<NewsfeedResponse> showNewsfeed(){
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Newsfeed> newsfeeds = newsfeedRepository.findAllByFeedMemberId(member.getId());
         return newsfeeds.stream().filter(newsfeed -> newsfeed.getStatus().equals(UsageStatus.ACTIVE)).map(newsfeed ->
                 new NewsfeedResponse(newsfeed.getMessage())).collect(Collectors.toList());
+    }
+
+    public List<PostResponse> showPostNewsfeed(){
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<NewsfeedPost> postNewsfeeds = newsfeedPostRepository.findAllByFeedMemberId(member.getId());
+        // 지워지지 않은 게시글일 때만 가져오기
+        return postNewsfeeds.stream().filter(newsfeedPost -> newsfeedPost.getPost().getStatus().equals(UsageStatus.ACTIVE))
+                .map(newsfeedPost -> new PostResponse(newsfeedPost.getPost())).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void createPostNewsfeed(Member feedMember, Post post){
+        NewsfeedPost newsfeedPost = NewsfeedPost.builder()
+                .feedMember(feedMember)
+                .post(post).build();
+        newsfeedPostRepository.save(newsfeedPost);
     }
 
     @Transactional

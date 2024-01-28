@@ -36,6 +36,13 @@ public class PostServiceImpl implements PostService {
                 .build();
         postRepository.save(post);
 
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        followRepository.findAllByToMemberId(member.getId()).forEach(
+                follow -> {
+                    newsfeedService.createPostNewsfeed(follow.getFromMember(), post);
+                }
+        );
+
         return new PostResponse(post);
     }
 
