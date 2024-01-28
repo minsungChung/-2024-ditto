@@ -27,18 +27,18 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public CommentResponse updateComment(@PathVariable("commentId") Long commentId, @RequestBody CommentRequest commentRequest){
-        return commentService.updateComment(commentId, commentRequest);
+    public CommentResponse updateComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody CommentRequest commentRequest){
+        return commentService.updateComment(postId, commentId, commentRequest);
     }
 
     @DeleteMapping("/{commentId}")
-    public CommentResponse deleteComment(@PathVariable("commentId") Long commentId){
-        return commentService.deleteComment(commentId);
+    public CommentResponse deleteComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
+        return commentService.deleteComment(postId, commentId);
     }
 
     @PostMapping("/{commentId}/like")
-    public CommentLikeResponse pushCommentLike(@PathVariable("commentId") Long commentId){
-        return commentService.pushCommentLike(commentId);
+    public CommentLikeResponse pushCommentLike(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
+        return commentService.pushCommentLike(postId, commentId);
     }
 
 

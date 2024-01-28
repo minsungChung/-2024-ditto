@@ -11,9 +11,9 @@ public interface CommentService {
 
     List<CommentResponse> getComments(Long postId);
 
-    CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
+    CommentResponse updateComment(Long postId, Long commentId, CommentRequest commentRequest);
 
-    CommentResponse deleteComment(Long commentId);
+    CommentResponse deleteComment(Long postId, Long commentId);
 
-    CommentLikeResponse pushCommentLike(Long commentId);
+    CommentLikeResponse pushCommentLike(Long postId, Long commentId);
 }

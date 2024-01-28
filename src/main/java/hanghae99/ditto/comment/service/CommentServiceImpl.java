@@ -8,7 +8,10 @@ import hanghae99.ditto.comment.dto.request.CommentRequest;
 import hanghae99.ditto.comment.dto.response.CommentLikeResponse;
 import hanghae99.ditto.comment.dto.response.CommentResponse;
 import hanghae99.ditto.global.entity.UsageStatus;
+import hanghae99.ditto.member.domain.FollowRepository;
 import hanghae99.ditto.member.domain.Member;
+import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
+import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.domain.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,23 +30,32 @@ public class CommentServiceImpl implements CommentService{
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final FollowRepository followRepository;
+    private final NewsfeedService newsfeedService;
 
     @Transactional
     public CommentResponse uploadComment(Long postId, CommentRequest commentRequest) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
-        });
+        Post post = checkPostAvailability(postId);
         Comment comment = Comment.builder()
                 .post(post)
                 .member((Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .content(commentRequest.getContent()).build();
         commentRepository.save(comment);
 
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Member receiver = post.getMember();
+        followRepository.findAllByToMemberId(member.getId()).forEach(
+                follow -> {
+                    NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "COMMENT");
+                    newsfeedService.createNewsfeed(newsfeedRequest);
+                }
+        );
+
         return new CommentResponse(comment);
     }
 
     public List<CommentResponse> getComments(Long postId) {
-
+        checkPostAvailability(postId);
         return commentRepository.findAllByPostId(postId).stream().map(
                 comment -> new CommentResponse(comment)
         ).collect(Collectors.toList());
@@ -51,7 +63,8 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
+    public CommentResponse updateComment(Long postId, Long commentId, CommentRequest commentRequest) {
+        checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
         });
@@ -68,7 +81,8 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentResponse deleteComment(Long commentId) {
+    public CommentResponse deleteComment(Long postId, Long commentId) {
+        checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
         });
@@ -85,7 +99,8 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentLikeResponse pushCommentLike(Long commentId){
+    public CommentLikeResponse pushCommentLike(Long postId, Long commentId){
+        Post post = checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
         });
@@ -94,9 +109,12 @@ public class CommentServiceImpl implements CommentService{
         }
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(member.getId(), commentId).orElse(null);
+
+        boolean flag = true;
         if (commentLike != null){
             if (commentLike.getStatus().equals(UsageStatus.ACTIVE)){
                 commentLike.deleteCommentLike();
+                flag = false;
             } else {
                 commentLike.pushCommentLike();
             }
@@ -105,6 +123,15 @@ public class CommentServiceImpl implements CommentService{
                     .member(member)
                     .comment(comment).build();
             commentLikeRepository.save(commentLike);
+        }
+
+        if (flag){
+            followRepository.findAllByToMemberId(member.getId()).forEach(
+                    follow -> {
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), post.getMember().getId(), "COMMENTLIKE");
+                        newsfeedService.createNewsfeed(newsfeedRequest);
+                    }
+            );
         }
         return new CommentLikeResponse(commentLike);
     }
@@ -122,5 +149,16 @@ public class CommentServiceImpl implements CommentService{
             return true;
         }
         return false;
+    }
+
+    public Post checkPostAvailability(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> {
+            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
+        });
+        if (post.getStatus().equals(UsageStatus.DELETED)){
+            throw new IllegalArgumentException("삭제된 게시글입니다.");
+        }
+
+        return post;
     }
 }

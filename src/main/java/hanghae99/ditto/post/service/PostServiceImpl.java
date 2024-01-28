@@ -1,7 +1,10 @@
 package hanghae99.ditto.post.service;
 
 import hanghae99.ditto.global.entity.UsageStatus;
+import hanghae99.ditto.member.domain.FollowRepository;
 import hanghae99.ditto.member.domain.Member;
+import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
+import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.domain.PostLike;
 import hanghae99.ditto.post.domain.PostLikeRepository;
@@ -21,6 +24,8 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final FollowRepository followRepository;
+    private final NewsfeedService newsfeedService;
 
     @Transactional
     public PostResponse uploadPost(PostRequest postRequest) {
@@ -95,9 +100,12 @@ public class PostServiceImpl implements PostService {
         }
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PostLike postLike = postLikeRepository.findByMemberIdAndPostId(member.getId(), postId).orElse(null);
+        boolean flag = true;
+
         if (postLike != null){
             if (postLike.getStatus().equals(UsageStatus.ACTIVE)){
                 postLike.deletePostLike();
+                flag = false;
             } else {
                 postLike.pushPostLike();
             }
@@ -106,6 +114,16 @@ public class PostServiceImpl implements PostService {
                     .member(member)
                     .post(post).build();
             postLikeRepository.save(postLike);
+        }
+
+        if (flag){
+            Member receiver = post.getMember();
+            followRepository.findAllByToMemberId(member.getId()).forEach(
+                    follow -> {
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "POSTLIKE");
+                        newsfeedService.createNewsfeed(newsfeedRequest);
+                    }
+            );
         }
 
         return new PostLikeResponse(postLike);

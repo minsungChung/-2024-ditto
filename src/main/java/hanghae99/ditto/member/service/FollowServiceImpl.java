@@ -7,6 +7,8 @@ import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.member.dto.response.FollowResponse;
 import hanghae99.ditto.member.dto.response.FollowMemberResponse;
+import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
+import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,15 +24,18 @@ public class FollowServiceImpl implements FollowService{
 
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
+    private final NewsfeedService newsfeedService;
 
     @Transactional
     public FollowResponse followMember(Long toMemberId) {
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Follow follow = followRepository.findByFromMemberIdAndToMemberId(member.getId(), toMemberId).orElse(null);
-        System.out.println(follow);
+        boolean flag = true;
+
         if (follow != null){
             if (follow.getStatus().equals(UsageStatus.ACTIVE)){
                 follow.deleteFollow();
+                flag = false;
             } else{
                 follow.activateFollow();
             }
@@ -42,22 +47,31 @@ public class FollowServiceImpl implements FollowService{
                     })).build();
             followRepository.save(follow);
         }
+        if (flag){
+            Follow finalFollow = follow;
+            followRepository.findAllByToMemberId(member.getId()).forEach(
+                    follow1 -> {
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow1.getFromMember().getId(), member.getId(), finalFollow.getToMember().getId(), "FOLLOW");
+                        newsfeedService.createNewsfeed(newsfeedRequest);
+                    }
+            );
+        }
 
         return new FollowResponse(follow.getFromMember(), follow.getToMember());
     }
 
     public List<FollowMemberResponse> getFollowings(Long memberId){
-        List<FollowMemberResponse> followingList = followRepository.findAllByFromMemberId(memberId).stream()
+        List<FollowMemberResponse> followings = followRepository.findAllByFromMemberId(memberId).stream()
                 .filter(follow -> follow.getStatus().equals(UsageStatus.ACTIVE)).map(
                 follow -> new FollowMemberResponse(follow.getToMember())).collect(Collectors.toList());
-        return followingList;
+        return followings;
     }
 
     public List<FollowMemberResponse> getFollowers(Long memberId){
-        List<FollowMemberResponse> followingList = followRepository.findAllByToMemberId(memberId).stream()
+        List<FollowMemberResponse> followers = followRepository.findAllByToMemberId(memberId).stream()
                 .filter(follow -> follow.getStatus().equals(UsageStatus.ACTIVE)).map(
                 follow -> new FollowMemberResponse(follow.getFromMember())).collect(Collectors.toList());
-        return followingList;
+        return followers;
     }
 
 }
