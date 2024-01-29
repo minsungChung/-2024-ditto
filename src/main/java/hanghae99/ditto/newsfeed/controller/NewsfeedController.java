@@ -25,11 +25,11 @@ public class NewsfeedController {
 
     @GetMapping
     public BaseResponse<Page<NewsfeedResponse>> showNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
-        return new BaseResponse(newsfeedService.showNewsfeed(principalDetails.getMember(), pageable));
+        return new BaseResponse<>(newsfeedService.showNewsfeed(principalDetails.getMember(), pageable));
     }
 
     @GetMapping("/posts")
     public BaseResponse<Page<PostResponse>> showPostNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
-        return new BaseResponse(newsfeedService.showPostNewsfeed(principalDetails.getMember(), pageable));
+        return new BaseResponse<>(newsfeedService.showPostNewsfeed(principalDetails.getMember(), pageable));
     }
 }
