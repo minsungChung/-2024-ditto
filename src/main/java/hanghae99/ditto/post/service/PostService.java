@@ -1,17 +1,18 @@
 package hanghae99.ditto.post.service;
 
+import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.dto.response.PostResponse;
 
 public interface PostService {
-    PostResponse uploadPost(PostRequest postRequest);
+    PostResponse uploadPost(Member member, PostRequest postRequest);
 
-    PostResponse getPost(Long postId);
+    PostResponse getPost(Member member, Long postId);
 
-    PostResponse updatePost(Long postId, PostRequest postRequest);
+    PostResponse updatePost(Member member, Long postId, PostRequest postRequest);
 
-    PostResponse deletePost(Long postId);
+    PostResponse deletePost(Member member, Long postId);
 
-    PostLikeResponse pushPostLike(Long postId);
+    PostLikeResponse pushPostLike(Member member, Long postId);
 }

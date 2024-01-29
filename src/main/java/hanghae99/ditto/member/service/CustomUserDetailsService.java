@@ -2,6 +2,7 @@ package hanghae99.ditto.member.service;
 
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
+import hanghae99.ditto.member.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         Member member = memberRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 멤버입니다."));
-        return member;
+        return new PrincipalDetails(member);
     }
 }

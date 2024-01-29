@@ -26,7 +26,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-        log.info("jwt filter...");
+
         // JWT가 헤더에 있는 경우
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
             String token = authorizationHeader.substring(7);
@@ -45,7 +45,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                     // 현재 Request의 Security Context에 접근권한 설정
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    log.info(SecurityContextHolder.getContext().toString());
                 }
             }
         }
