@@ -11,6 +11,7 @@ import hanghae99.ditto.member.dto.request.MemberPasswordRequest;
 import hanghae99.ditto.member.dto.response.MemberJoinResponse;
 import hanghae99.ditto.member.dto.response.UpdateMemberResponse;
 import hanghae99.ditto.member.exception.NoSuchMemberException;
+import hanghae99.ditto.member.exception.SamePasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,8 +55,8 @@ public class MemberServiceImpl implements MemberService {
         });
 
         // 인가된 이메일과 바꾸려는 정보의 이메일이 동일하면
-        if (member.equals(findMember)){
-            member.updateMemberExtraInfo(memberInfoRequest.getMemberName(), memberInfoRequest.getProfileImage(), memberInfoRequest.getBio());
+        if (member.getId() == findMember.getId()){
+            findMember.updateMemberExtraInfo(memberInfoRequest.getMemberName(), memberInfoRequest.getProfileImage(), memberInfoRequest.getBio());
         } else {
             throw new InvalidAccessException();
         }
@@ -69,13 +70,13 @@ public class MemberServiceImpl implements MemberService {
             throw new NoSuchMemberException();
         });
 
-        if (member.equals(findMember)){
+        if (member.getId() == findMember.getId()){
             String newPassword = memberPasswordRequest.getNewPassword();
             // 기존 비밀번호와 일치하면
             if (bCryptPasswordEncoder.matches(newPassword, member.getPassword())){
-                throw new RuntimeException("기존 비밀번호와 동일한 비밀번호입니다.");
+                throw new SamePasswordException();
             } else {
-                member.updateMemberPassword(bCryptPasswordEncoder.encode(newPassword));
+                findMember.updateMemberPassword(bCryptPasswordEncoder.encode(newPassword));
             }
         } else {
             throw new InvalidAccessException();
