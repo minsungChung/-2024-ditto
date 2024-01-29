@@ -4,5 +4,5 @@ public class CustomException extends RuntimeException{
 
     private CustomException() {}
 
-    protected CustomException(String message) {super(message);}
+    public CustomException(String message) {super(message);}
 }
