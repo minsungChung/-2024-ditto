@@ -4,9 +4,11 @@ import hanghae99.ditto.auth.dto.request.AuthenticateCodeRequest;
 import hanghae99.ditto.auth.dto.request.LoginRequest;
 import hanghae99.ditto.auth.dto.request.LogoutRequest;
 import hanghae99.ditto.auth.dto.request.SendEmailAuthenticationRequest;
+import hanghae99.ditto.auth.dto.response.EmailAuthenticationResponse;
+import hanghae99.ditto.auth.dto.response.LoginResponse;
 import hanghae99.ditto.auth.service.AuthService;
+import hanghae99.ditto.global.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,21 +19,21 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/email-authentication")
-    public HttpEntity<?> sendEmailAuthentication(@RequestBody SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
-        return authService.sendEmailAuthentication(sendEmailAuthenticationRequest);
+    public BaseResponse<EmailAuthenticationResponse> sendEmailAuthentication(@RequestBody SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
+        return new BaseResponse(authService.sendEmailAuthentication(sendEmailAuthenticationRequest));
     }
 
     @PostMapping("/authentication-code")
-    public HttpEntity<?> authenticateCode(@RequestBody AuthenticateCodeRequest authenticateCodeRequest){
-        return authService.authenticateCode(authenticateCodeRequest);
+    public BaseResponse<EmailAuthenticationResponse> authenticateCode(@RequestBody AuthenticateCodeRequest authenticateCodeRequest){
+        return new BaseResponse(authService.authenticateCode(authenticateCodeRequest));
     }
     @PostMapping("/login")
-    public HttpEntity<?> login(@RequestBody LoginRequest loginRequest){
-        return authService.login(loginRequest);
+    public BaseResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+        return new BaseResponse(authService.login(loginRequest));
     }
 
     @DeleteMapping("/logout")
-    public HttpEntity<?> logout(@RequestBody LogoutRequest logoutRequest){
-        return authService.logout(logoutRequest);
+    public BaseResponse<String> logout(@RequestBody LogoutRequest logoutRequest){
+        return new BaseResponse(authService.logout(logoutRequest));
     }
 }

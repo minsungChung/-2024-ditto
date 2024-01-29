@@ -8,16 +8,18 @@ import hanghae99.ditto.auth.dto.request.LogoutRequest;
 import hanghae99.ditto.auth.dto.request.SendEmailAuthenticationRequest;
 import hanghae99.ditto.auth.dto.response.EmailAuthenticationResponse;
 import hanghae99.ditto.auth.dto.response.LoginResponse;
+import hanghae99.ditto.auth.exception.InvalidAccessException;
+import hanghae99.ditto.auth.exception.InvalidEmailException;
 import hanghae99.ditto.auth.support.jwt.JwtTokenProvider;
 import hanghae99.ditto.auth.support.redis.RedisUtil;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
+import hanghae99.ditto.member.exception.NoSuchEmailException;
+import hanghae99.ditto.member.exception.NoSuchMemberException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,15 +40,13 @@ public class AuthService {
     private final RedisUtil redisUtil;
 
     @Transactional
-    public HttpEntity<?> sendEmailAuthentication(SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
+    public EmailAuthenticationResponse sendEmailAuthentication(SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
         // 랜덤 인증 코드 생성
         String authenticationCode = createAuthenticationCode();
 
         // emailSerivce의 인증코드 보내는 메서드의 성공 여부에 따라 응답
         if (!emailService.sendEmailAuthentication(sendEmailAuthenticationRequest, authenticationCode)){
-            return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(-1, "인증 번호 발송 실패"), HttpStatus.BAD_REQUEST
-            );
+            throw new InvalidEmailException("인증코드 발송 실패");
         }
 
         // 메일 발송 성공 시
@@ -68,9 +68,7 @@ public class AuthService {
 
         memberAuthenticationCodeRepository.save(memberAuthenticationCodeEntity);
 
-        return new ResponseEntity<>(
-                new EmailAuthenticationResponse(0, "인증 번호 발송 성공"), HttpStatus.OK
-        );
+        return new EmailAuthenticationResponse(memberAuthenticationCodeEntity.getId());
 
     }
 
@@ -79,16 +77,14 @@ public class AuthService {
     }
 
     @Transactional
-    public HttpEntity<?> authenticateCode(AuthenticateCodeRequest authenticateCodeRequest){
+    public EmailAuthenticationResponse authenticateCode(AuthenticateCodeRequest authenticateCodeRequest){
         // 유효한 인증 코드 데이터를 찾아서
         Optional<MemberAuthenticationCodeEntity> memberAuthenticationCodeEntityOptional =
                 memberAuthenticationCodeRepository.findByEmailAndEndDateAfterAndStatusEquals(authenticateCodeRequest.getEmail(), LocalDateTime.now(), UsageStatus.ACTIVE);
 
         // 없으면 인증 코드 없음 반환
         if (memberAuthenticationCodeEntityOptional.isEmpty()){
-            return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(-1, "인증 코드 없음"), HttpStatus.BAD_REQUEST
-            );
+            throw new InvalidAccessException("인증번호가 아닙니다.");
         }
 
         // 있으면 찾아서
@@ -99,44 +95,34 @@ public class AuthService {
             memberAuthenticationCodeEntity.authenticateEmail();
             memberAuthenticationCodeEntity.deleteCode();
 
-            return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(0, "인증 성공"), HttpStatus.OK
-            );
+            return new EmailAuthenticationResponse(memberAuthenticationCodeEntity.getId());
         } else {
-            return new ResponseEntity<>(
-                    new EmailAuthenticationResponse(-1, "인증 실패"), HttpStatus.BAD_REQUEST
-            );
+            throw new InvalidAccessException("인증에 실패하였습니다.");
         }
     }
 
     @Transactional
-    public HttpEntity<?> login(LoginRequest loginRequest){
+    public LoginResponse login(LoginRequest loginRequest){
         Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> {
-           throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
+           throw new NoSuchEmailException();
         });
 
         if(member.getStatus().equals(UsageStatus.DELETED)){
-            throw new IllegalArgumentException("탈퇴한 계정입니다.");
+            throw new NoSuchMemberException();
         }
 
         if(!bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())){
-            return new ResponseEntity<>(
-                    new LoginResponse(null, "로그인 실패"), HttpStatus.BAD_REQUEST
-            );
+            throw new InvalidAccessException("로그인에 실패하셨습니다.");
         } else{
             String accessToken = jwtTokenProvider.createToken(member.getId());
             member.updateLastLogin();
-            return new ResponseEntity<>(
-                    new LoginResponse(member.getId(), accessToken), HttpStatus.OK
-            );
+            return new LoginResponse(member.getId(), accessToken);
         }
     }
 
-    public HttpEntity<?> logout(LogoutRequest logoutRequest){
+    public String logout(LogoutRequest logoutRequest){
         redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
-        return new ResponseEntity<>(
-                new LoginResponse(1L, "로그아웃 완료"), HttpStatus.OK
-        );
+        return "로그아웃 완료";
     }
 
 }

@@ -1,5 +1,6 @@
 package hanghae99.ditto.member.controller;
 
+import hanghae99.ditto.global.response.BaseResponse;
 import hanghae99.ditto.member.domain.PrincipalDetails;
 import hanghae99.ditto.member.dto.response.FollowResponse;
 import hanghae99.ditto.member.dto.response.FollowMemberResponse;
@@ -18,17 +19,17 @@ public class FollowController {
     private final FollowService followService;
 
     @PostMapping
-    public FollowResponse followMember(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("toMemberId") Long toMemberId){
-        return followService.followMember(principalDetails.getMember(), toMemberId);
+    public BaseResponse<FollowResponse> followMember(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("toMemberId") Long toMemberId){
+        return new BaseResponse(followService.followMember(principalDetails.getMember(), toMemberId));
     }
 
     @GetMapping("/followings")
-    public List<FollowMemberResponse> getFollowings(@PathVariable("toMemberId") Long memberId){
-        return followService.getFollowings(memberId);
+    public BaseResponse<List<FollowMemberResponse>> getFollowings(@PathVariable("toMemberId") Long memberId){
+        return new BaseResponse(followService.getFollowings(memberId));
     }
 
     @GetMapping("/followers")
-    public List<FollowMemberResponse> getFollowers(@PathVariable("toMemberId") Long memberId){
-        return followService.getFollowers(memberId);
+    public BaseResponse<List<FollowMemberResponse>> getFollowers(@PathVariable("toMemberId") Long memberId){
+        return new BaseResponse(followService.getFollowers(memberId));
     }
 }

@@ -1,5 +1,6 @@
 package hanghae99.ditto.newsfeed.controller;
 
+import hanghae99.ditto.global.response.BaseResponse;
 import hanghae99.ditto.member.domain.PrincipalDetails;
 import hanghae99.ditto.newsfeed.dto.response.NewsfeedResponse;
 import hanghae99.ditto.newsfeed.service.NewsfeedService;
@@ -23,12 +24,12 @@ public class NewsfeedController {
     private final NewsfeedService newsfeedService;
 
     @GetMapping
-    public Page<NewsfeedResponse> showNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
-        return newsfeedService.showNewsfeed(principalDetails.getMember(), pageable);
+    public BaseResponse<Page<NewsfeedResponse>> showNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
+        return new BaseResponse(newsfeedService.showNewsfeed(principalDetails.getMember(), pageable));
     }
 
     @GetMapping("/posts")
-    public Page<PostResponse> showPostNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
-        return newsfeedService.showPostNewsfeed(principalDetails.getMember(), pageable);
+    public BaseResponse<Page<PostResponse>> showPostNewsfeed(@AuthenticationPrincipal PrincipalDetails principalDetails, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
+        return new BaseResponse(newsfeedService.showPostNewsfeed(principalDetails.getMember(), pageable));
     }
 }
