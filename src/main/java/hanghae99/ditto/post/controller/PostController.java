@@ -6,6 +6,7 @@ import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.service.PostService;
 import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public BaseResponse<PostResponse> uploadPost(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PostRequest postRequest){
+    public BaseResponse<PostResponse> uploadPost(@AuthenticationPrincipal PrincipalDetails principalDetails, @Valid @RequestBody PostRequest postRequest){
         return new BaseResponse(postService.uploadPost(principalDetails.getMember(), postRequest));
     }
 
@@ -28,7 +29,7 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    public BaseResponse<PostResponse> updatePost(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @RequestBody PostRequest postRequest){
+    public BaseResponse<PostResponse> updatePost(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
         return new BaseResponse(postService.updatePost(principalDetails.getMember(), postId, postRequest));
     }
 

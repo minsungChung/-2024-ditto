@@ -6,6 +6,7 @@ import hanghae99.ditto.comment.dto.response.CommentResponse;
 import hanghae99.ditto.comment.service.CommentService;
 import hanghae99.ditto.global.response.BaseResponse;
 import hanghae99.ditto.member.domain.PrincipalDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public BaseResponse<CommentResponse> uploadComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @RequestBody CommentRequest commentRequest){
+    public BaseResponse<CommentResponse> uploadComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @Valid @RequestBody CommentRequest commentRequest){
         return new BaseResponse(commentService.uploadComment(principalDetails.getMember(), postId, commentRequest));
     }
 
@@ -30,7 +31,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public BaseResponse<CommentResponse> updateComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody CommentRequest commentRequest){
+    public BaseResponse<CommentResponse> updateComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Valid @RequestBody CommentRequest commentRequest){
         return new BaseResponse(commentService.updateComment(principalDetails.getMember(), postId, commentId, commentRequest));
     }
 
