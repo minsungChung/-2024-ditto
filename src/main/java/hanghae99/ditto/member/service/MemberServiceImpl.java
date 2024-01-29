@@ -7,8 +7,6 @@ import hanghae99.ditto.member.dto.request.MemberJoinRequest;
 import hanghae99.ditto.member.dto.request.MemberPasswordRequest;
 import hanghae99.ditto.member.dto.response.MemberJoinResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,37 +39,35 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Transactional
-    public void updateMemberInfo(Long memberId, MemberInfoRequest memberInfoRequest){
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
+    public void updateMemberInfo(Member member, Long memberId, MemberInfoRequest memberInfoRequest){
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 아이디입니다.");
         });
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // 인가된 이메일과 바꾸려는 정보의 이메일이 동일하면
-        if (userDetails.getUsername().equals(member.getEmail())){
+        if (member.equals(findMember)){
             member.updateMemberExtraInfo(memberInfoRequest.getMemberName(), memberInfoRequest.getProfileImage(), memberInfoRequest.getBio());
         } else {
-            throw new RuntimeException("인가된 정보와 일치하지 않습니다.");
+            throw new RuntimeException("권한이 없는 멤버입니다.");
         }
     }
 
     @Transactional
-    public void updateMemberPassword(Long memberId, MemberPasswordRequest memberPasswordRequest){
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
+    public void updateMemberPassword(Member member, Long memberId, MemberPasswordRequest memberPasswordRequest){
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 아이디입니다.");
         });
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (member.getPassword().equals(userDetails.getPassword())){
+        if (member.equals(findMember)){
             String newPassword = memberPasswordRequest.getNewPassword();
             // 기존 비밀번호와 일치하면
-            if (bCryptPasswordEncoder.matches(newPassword, userDetails.getPassword())){
+            if (bCryptPasswordEncoder.matches(newPassword, member.getPassword())){
                 throw new IllegalArgumentException("기존 비밀번호와 동일한 비밀번호입니다.");
             } else {
                 member.updateMemberPassword(bCryptPasswordEncoder.encode(newPassword));
             }
         } else {
-            throw new RuntimeException("인가된 정보와 일치하지 않습니다");
+            throw new RuntimeException("권한이 없는 멤버입니다.");
         }
     }
 }

@@ -13,7 +13,6 @@ import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +27,7 @@ public class PostServiceImpl implements PostService {
     private final NewsfeedService newsfeedService;
 
     @Transactional
-    public PostResponse uploadPost(PostRequest postRequest) {
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public PostResponse uploadPost(Member member, PostRequest postRequest) {
         Post post = Post.builder()
                 .member(member)
                 .title(postRequest.getTitle())
@@ -47,7 +45,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public PostResponse getPost(Long postId){
+    public PostResponse getPost(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
         });
@@ -56,14 +54,14 @@ public class PostServiceImpl implements PostService {
         }
 
         // 조회한 사람이 자신이 아닐 때 조회수 1 높임
-        if (!checkAuthenticated(post.getMember().getId())){
+        if (!member.equals(post.getMember())){
             post.addView();
         }
         return new PostResponse(post);
     }
 
     @Transactional
-    public PostResponse updatePost(Long postId, PostRequest postRequest){
+    public PostResponse updatePost(Member member, Long postId, PostRequest postRequest){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
         });
@@ -71,7 +69,7 @@ public class PostServiceImpl implements PostService {
             throw new IllegalArgumentException("삭제된 게시글입니다.");
         }
 
-        if (checkAuthenticated(post.getMember().getId())){
+        if (member.equals(post.getMember())){
             post.updatePost(postRequest.getTitle(), postRequest.getContent());
         } else{
             throw new RuntimeException("권한이 없는 유저입니다.");
@@ -81,7 +79,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public PostResponse deletePost(Long postId){
+    public PostResponse deletePost(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
         });
@@ -89,7 +87,7 @@ public class PostServiceImpl implements PostService {
             throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
         }
 
-        if (checkAuthenticated(post.getMember().getId())){
+        if (member.equals(post.getMember())){
             post.deletePost();
         } else{
             throw new RuntimeException("권한이 없는 유저입니다.");
@@ -98,14 +96,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public PostLikeResponse pushPostLike(Long postId){
+    public PostLikeResponse pushPostLike(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지않은 게시글입니다.");
         });
         if (isPostDeleted(post)){
             throw new IllegalArgumentException("삭제된 게시글에는 좋아요를 누를 수 없습니다.");
         }
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PostLike postLike = postLikeRepository.findByMemberIdAndPostId(member.getId(), postId).orElse(null);
         boolean flag = true;
 
@@ -134,14 +131,6 @@ public class PostServiceImpl implements PostService {
         }
 
         return new PostLikeResponse(postLike);
-    }
-
-    public boolean checkAuthenticated(Long memberId){
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (member.getId().equals(memberId)){
-            return true;
-        }
-        return false;
     }
 
     public boolean isPostDeleted(Post post){

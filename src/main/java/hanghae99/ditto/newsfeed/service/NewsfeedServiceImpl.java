@@ -13,7 +13,6 @@ import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +25,12 @@ public class NewsfeedServiceImpl implements NewsfeedService{
     private final MemberRepository memberRepository;
     private final NewsfeedPostRepository newsfeedPostRepository;
 
-    public Page<NewsfeedResponse> showNewsfeed(Pageable pageable){
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Page<NewsfeedResponse> showNewsfeed(Member member, Pageable pageable){
         Page<Newsfeed> newsfeeds = newsfeedRepository.findAllByFeedMemberId(member.getId(), pageable);
         return newsfeeds.map(newsfeed -> new NewsfeedResponse(newsfeed.getMessage()));
     }
 
-    public Page<PostResponse> showPostNewsfeed(Pageable pageable){
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Page<PostResponse> showPostNewsfeed(Member member, Pageable pageable){
         Page<NewsfeedPost> postNewsfeeds = newsfeedPostRepository.findAllByFeedMemberId(member.getId(), pageable);
 
         return postNewsfeeds.map(newsfeedPost -> new PostResponse(newsfeedPost.getPost()));

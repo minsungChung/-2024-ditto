@@ -15,7 +15,6 @@ import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.domain.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +33,14 @@ public class CommentServiceImpl implements CommentService{
     private final NewsfeedService newsfeedService;
 
     @Transactional
-    public CommentResponse uploadComment(Long postId, CommentRequest commentRequest) {
+    public CommentResponse uploadComment(Member member, Long postId, CommentRequest commentRequest) {
         Post post = checkPostAvailability(postId);
         Comment comment = Comment.builder()
                 .post(post)
-                .member((Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .member(member)
                 .content(commentRequest.getContent()).build();
         commentRepository.save(comment);
 
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Member receiver = post.getMember();
         followRepository.findAllByToMemberId(member.getId()).forEach(
                 follow -> {
@@ -63,12 +61,12 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentResponse updateComment(Long postId, Long commentId, CommentRequest commentRequest) {
+    public CommentResponse updateComment(Member member, Long postId, Long commentId, CommentRequest commentRequest) {
         checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
         });
-        if (checkAuthenticated(comment.getMember().getId())){
+        if (member.equals(comment.getMember())){
             if (!isCommentDeleted(comment)) {
                 comment.updateContent(commentRequest.getContent());
             } else {
@@ -81,12 +79,12 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentResponse deleteComment(Long postId, Long commentId) {
+    public CommentResponse deleteComment(Member member,Long postId, Long commentId) {
         checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
         });
-        if (checkAuthenticated(comment.getMember().getId())){
+        if (member.equals(comment.getMember())){
             if (!isCommentDeleted(comment)){
                 comment.deleteComment();
             } else {
@@ -99,7 +97,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
-    public CommentLikeResponse pushCommentLike(Long postId, Long commentId){
+    public CommentLikeResponse pushCommentLike(Member member, Long postId, Long commentId){
         Post post = checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
@@ -107,7 +105,6 @@ public class CommentServiceImpl implements CommentService{
         if (isCommentDeleted(comment)){
             throw new IllegalStateException("삭제된 댓글입니다.");
         }
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(member.getId(), commentId).orElse(null);
 
         boolean flag = true;
@@ -134,14 +131,6 @@ public class CommentServiceImpl implements CommentService{
             );
         }
         return new CommentLikeResponse(commentLike);
-    }
-
-    public boolean checkAuthenticated(Long memberId){
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (member.getId().equals(memberId)){
-            return true;
-        }
-        return false;
     }
 
     public boolean isCommentDeleted(Comment comment){

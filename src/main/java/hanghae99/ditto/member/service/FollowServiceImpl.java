@@ -10,7 +10,6 @@ import hanghae99.ditto.member.dto.response.FollowMemberResponse;
 import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
 import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +26,7 @@ public class FollowServiceImpl implements FollowService{
     private final NewsfeedService newsfeedService;
 
     @Transactional
-    public FollowResponse followMember(Long toMemberId) {
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public FollowResponse followMember(Member member, Long toMemberId) {
         Follow follow = followRepository.findByFromMemberIdAndToMemberId(member.getId(), toMemberId).orElse(null);
         boolean flag = true;
 

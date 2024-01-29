@@ -4,7 +4,9 @@ import hanghae99.ditto.comment.dto.request.CommentRequest;
 import hanghae99.ditto.comment.dto.response.CommentLikeResponse;
 import hanghae99.ditto.comment.dto.response.CommentResponse;
 import hanghae99.ditto.comment.service.CommentService;
+import hanghae99.ditto.member.domain.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public CommentResponse uploadComment(@PathVariable("postId") Long postId, @RequestBody CommentRequest commentRequest){
-        return commentService.uploadComment(postId, commentRequest);
+    public CommentResponse uploadComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @RequestBody CommentRequest commentRequest){
+        return commentService.uploadComment(principalDetails.getMember(), postId, commentRequest);
     }
 
     @GetMapping()
@@ -27,18 +29,18 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public CommentResponse updateComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody CommentRequest commentRequest){
-        return commentService.updateComment(postId, commentId, commentRequest);
+    public CommentResponse updateComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @RequestBody CommentRequest commentRequest){
+        return commentService.updateComment(principalDetails.getMember(), postId, commentId, commentRequest);
     }
 
     @DeleteMapping("/{commentId}")
-    public CommentResponse deleteComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
-        return commentService.deleteComment(postId, commentId);
+    public CommentResponse deleteComment(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
+        return commentService.deleteComment(principalDetails.getMember(), postId, commentId);
     }
 
     @PostMapping("/{commentId}/like")
-    public CommentLikeResponse pushCommentLike(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
-        return commentService.pushCommentLike(postId, commentId);
+    public CommentLikeResponse pushCommentLike(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
+        return commentService.pushCommentLike(principalDetails.getMember(), postId, commentId);
     }
 
 

@@ -9,11 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface NewsfeedService {
-    Page<NewsfeedResponse> showNewsfeed(Pageable pageable);
+    Page<NewsfeedResponse> showNewsfeed(Member member, Pageable pageable);
 
     void createNewsfeed(NewsfeedRequest newsfeedRequest);
 
-    Page<PostResponse> showPostNewsfeed(Pageable pageable);
+    Page<PostResponse> showPostNewsfeed(Member member, Pageable pageable);
 
     void createPostNewsfeed(Member feedMember, Post post);
 }
