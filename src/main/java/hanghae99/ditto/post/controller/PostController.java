@@ -20,27 +20,27 @@ public class PostController {
 
     @PostMapping
     public BaseResponse<PostResponse> uploadPost(@AuthenticationPrincipal PrincipalDetails principalDetails, @Valid @RequestBody PostRequest postRequest){
-        return new BaseResponse(postService.uploadPost(principalDetails.getMember(), postRequest));
+        return new BaseResponse<>(postService.uploadPost(principalDetails.getMember(), postRequest));
     }
 
     @GetMapping("/{postId}")
     public BaseResponse<PostResponse> getPost(@AuthenticationPrincipal PrincipalDetails principalDetails,@PathVariable("postId") Long postId){
-        return new BaseResponse(postService.getPost(principalDetails.getMember(), postId));
+        return new BaseResponse<>(postService.getPost(principalDetails.getMember(), postId));
     }
 
     @PatchMapping("/{postId}")
     public BaseResponse<PostResponse> updatePost(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
-        return new BaseResponse(postService.updatePost(principalDetails.getMember(), postId, postRequest));
+        return new BaseResponse<>(postService.updatePost(principalDetails.getMember(), postId, postRequest));
     }
 
     @DeleteMapping("/{postId}")
     public BaseResponse<PostResponse> deletePost(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId){
-        return new BaseResponse(postService.deletePost(principalDetails.getMember(), postId));
+        return new BaseResponse<>(postService.deletePost(principalDetails.getMember(), postId));
     }
 
     @PostMapping("/{postId}/like")
     public BaseResponse<PostLikeResponse> pushPostLike(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("postId") Long postId){
-        return new BaseResponse(postService.pushPostLike(principalDetails.getMember(), postId));
+        return new BaseResponse<>(postService.pushPostLike(principalDetails.getMember(), postId));
     }
 
 

@@ -20,16 +20,16 @@ public class FollowController {
 
     @PostMapping
     public BaseResponse<FollowResponse> followMember(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("toMemberId") Long toMemberId){
-        return new BaseResponse(followService.followMember(principalDetails.getMember(), toMemberId));
+        return new BaseResponse<>(followService.followMember(principalDetails.getMember(), toMemberId));
     }
 
     @GetMapping("/followings")
     public BaseResponse<List<FollowMemberResponse>> getFollowings(@PathVariable("toMemberId") Long memberId){
-        return new BaseResponse(followService.getFollowings(memberId));
+        return new BaseResponse<>(followService.getFollowings(memberId));
     }
 
     @GetMapping("/followers")
     public BaseResponse<List<FollowMemberResponse>> getFollowers(@PathVariable("toMemberId") Long memberId){
-        return new BaseResponse(followService.getFollowers(memberId));
+        return new BaseResponse<>(followService.getFollowers(memberId));
     }
 }

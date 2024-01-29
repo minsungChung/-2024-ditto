@@ -22,17 +22,17 @@ public class MemberController {
 
     @PostMapping
     public BaseResponse<MemberJoinResponse> joinMember(@Valid @RequestBody MemberJoinRequest memberJoinRequest){
-        return new BaseResponse(memberService.saveMember(memberJoinRequest));
+        return new BaseResponse<>(memberService.saveMember(memberJoinRequest));
     }
 
     @PatchMapping("/{memberId}")
     public BaseResponse<UpdateMemberResponse> updateMemberInfo(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("memberId") Long memberId, @Valid @RequestBody MemberInfoRequest memberInfoRequest){
-        return new BaseResponse(memberService.updateMemberInfo(principalDetails.getMember(), memberId, memberInfoRequest));
+        return new BaseResponse<>(memberService.updateMemberInfo(principalDetails.getMember(), memberId, memberInfoRequest));
     }
 
     @PatchMapping("/{memberId}/password")
     public BaseResponse<UpdateMemberResponse> updateMemberPassword(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("memberId") Long memberId,@Valid @RequestBody MemberPasswordRequest memberPasswordRequest){
-        return new BaseResponse(memberService.updateMemberPassword(principalDetails.getMember(), memberId, memberPasswordRequest));
+        return new BaseResponse<>(memberService.updateMemberPassword(principalDetails.getMember(), memberId, memberPasswordRequest));
     }
 
 }

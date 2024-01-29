@@ -21,20 +21,20 @@ public class AuthController {
 
     @PostMapping("/email-authentication")
     public BaseResponse<EmailAuthenticationResponse> sendEmailAuthentication(@Valid @RequestBody SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
-        return new BaseResponse(authService.sendEmailAuthentication(sendEmailAuthenticationRequest));
+        return new BaseResponse<>(authService.sendEmailAuthentication(sendEmailAuthenticationRequest));
     }
 
     @PostMapping("/authentication-code")
     public BaseResponse<EmailAuthenticationResponse> authenticateCode(@Valid @RequestBody AuthenticateCodeRequest authenticateCodeRequest){
-        return new BaseResponse(authService.authenticateCode(authenticateCodeRequest));
+        return new BaseResponse<>(authService.authenticateCode(authenticateCodeRequest));
     }
     @PostMapping("/login")
     public BaseResponse<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-        return new BaseResponse(authService.login(loginRequest));
+        return new BaseResponse<>(authService.login(loginRequest));
     }
 
     @DeleteMapping("/logout")
     public BaseResponse<String> logout(@Valid @RequestBody LogoutRequest logoutRequest){
-        return new BaseResponse(authService.logout(logoutRequest));
+        return new BaseResponse<>(authService.logout(logoutRequest));
     }
 }
