@@ -124,7 +124,7 @@ public class PostServiceImpl implements PostService {
             Member receiver = post.getMember();
             followRepository.findAllByToMemberId(member.getId()).forEach(
                     follow -> {
-                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "POSTLIKE");
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "POSTLIKE", post.getTitle());
                         newsfeedService.createNewsfeed(newsfeedRequest);
                     }
             );

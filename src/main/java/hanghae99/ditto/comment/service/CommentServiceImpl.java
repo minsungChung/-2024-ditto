@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService{
         Member receiver = post.getMember();
         followRepository.findAllByToMemberId(member.getId()).forEach(
                 follow -> {
-                    NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "COMMENT");
+                    NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), receiver.getId(), "COMMENT", post.getTitle());
                     newsfeedService.createNewsfeed(newsfeedRequest);
                 }
         );
@@ -125,7 +125,7 @@ public class CommentServiceImpl implements CommentService{
         if (flag){
             followRepository.findAllByToMemberId(member.getId()).forEach(
                     follow -> {
-                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), post.getMember().getId(), "COMMENTLIKE");
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMember().getId(), member.getId(), post.getMember().getId(), "COMMENTLIKE", null);
                         newsfeedService.createNewsfeed(newsfeedRequest);
                     }
             );

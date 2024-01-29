@@ -60,9 +60,9 @@ public class NewsfeedServiceImpl implements NewsfeedService{
         String message = sender.getMemberName() + "님이 ";
         if (checkSameMember(feedOwner.getId(), receiver.getId())){
             if (newsfeedRequest.getType().equals("COMMENT")){
-                message += "내 게시글에 댓글을 달았습니다.";
+                message += newsfeedRequest.getPostTitle() + " 게시글에 댓글을 달았습니다.";
             } else if (newsfeedRequest.getType().equals("POSTLIKE")) {
-                message += "내 게시글에 좋아요를 눌렀습니다.";
+                message += newsfeedRequest.getPostTitle() + " 게시글에 좋아요를 눌렀습니다.";
             } else if (newsfeedRequest.getType().equals("COMMENTLIKE")) {
                 message += "내 댓글에 좋아요를 눌렀습니다.";
             } else if (newsfeedRequest.getType().equals("FOLLOW")) {

@@ -49,7 +49,7 @@ public class FollowServiceImpl implements FollowService{
             Follow finalFollow = follow;
             followRepository.findAllByToMemberId(member.getId()).forEach(
                     follow1 -> {
-                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow1.getFromMember().getId(), member.getId(), finalFollow.getToMember().getId(), "FOLLOW");
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow1.getFromMember().getId(), member.getId(), finalFollow.getToMember().getId(), "FOLLOW", null);
                         newsfeedService.createNewsfeed(newsfeedRequest);
                     }
             );
