@@ -2,6 +2,7 @@ package hanghae99.ditto.newsfeed.service;
 
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
+import hanghae99.ditto.member.exception.NoSuchMemberException;
 import hanghae99.ditto.newsfeed.domain.Newsfeed;
 import hanghae99.ditto.newsfeed.domain.NewsfeedPost;
 import hanghae99.ditto.newsfeed.domain.NewsfeedPostRepository;
@@ -48,13 +49,13 @@ public class NewsfeedServiceImpl implements NewsfeedService{
     public void createNewsfeed(NewsfeedRequest newsfeedRequest){
 
         Member feedOwner = memberRepository.findById(newsfeedRequest.getFeedMemberId()).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 멤버입니다.");
+            throw new NoSuchMemberException();
         });
         Member sender = memberRepository.findById(newsfeedRequest.getSenderId()).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 멤버입니다.");
+            throw new NoSuchMemberException();
         });
         Member receiver = memberRepository.findById(newsfeedRequest.getReceiverId()).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 멤버입니다.");
+            throw new NoSuchMemberException();
         });
 
         String message = sender.getMemberName() + "님이 ";

@@ -5,11 +5,12 @@ import hanghae99.ditto.member.dto.request.MemberInfoRequest;
 import hanghae99.ditto.member.dto.request.MemberJoinRequest;
 import hanghae99.ditto.member.dto.request.MemberPasswordRequest;
 import hanghae99.ditto.member.dto.response.MemberJoinResponse;
+import hanghae99.ditto.member.dto.response.UpdateMemberResponse;
 
 public interface MemberService {
     MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest);
 
-    void updateMemberInfo(Member member, Long memberId, MemberInfoRequest memberInfoRequest);
+    UpdateMemberResponse updateMemberInfo(Member member, Long memberId, MemberInfoRequest memberInfoRequest);
 
-    void updateMemberPassword(Member member, Long memberId, MemberPasswordRequest memberPasswordRequest);
+    UpdateMemberResponse updateMemberPassword(Member member, Long memberId, MemberPasswordRequest memberPasswordRequest);
 }

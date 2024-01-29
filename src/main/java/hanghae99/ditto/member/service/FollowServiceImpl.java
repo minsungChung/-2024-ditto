@@ -7,6 +7,7 @@ import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.member.dto.response.FollowResponse;
 import hanghae99.ditto.member.dto.response.FollowMemberResponse;
+import hanghae99.ditto.member.exception.NoSuchMemberException;
 import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
 import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class FollowServiceImpl implements FollowService{
             follow = Follow.builder()
                     .fromMember(member)
                     .toMember(memberRepository.findById(toMemberId).orElseThrow(() -> {
-                        throw new IllegalArgumentException("유효하지 않은 아이디입니다");
+                        throw new NoSuchMemberException();
                     })).build();
             followRepository.save(follow);
         }

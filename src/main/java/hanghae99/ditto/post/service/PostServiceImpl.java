@@ -1,5 +1,6 @@
 package hanghae99.ditto.post.service;
 
+import hanghae99.ditto.auth.exception.InvalidAccessException;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.FollowRepository;
 import hanghae99.ditto.member.domain.Member;
@@ -12,6 +13,7 @@ import hanghae99.ditto.post.domain.PostRepository;
 import hanghae99.ditto.post.dto.request.PostRequest;
 import hanghae99.ditto.post.dto.response.PostLikeResponse;
 import hanghae99.ditto.post.dto.response.PostResponse;
+import hanghae99.ditto.post.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +49,10 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse getPost(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
+            throw new NoSuchPostException();
         });
         if (isPostDeleted(post)){
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
+            throw new NoSuchPostException();
         }
 
         // 조회한 사람이 자신이 아닐 때 조회수 1 높임
@@ -63,16 +65,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse updatePost(Member member, Long postId, PostRequest postRequest){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
+            throw new NoSuchPostException();
         });
         if (isPostDeleted(post)){
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
+            throw new NoSuchPostException();
         }
 
         if (member.equals(post.getMember())){
             post.updatePost(postRequest.getTitle(), postRequest.getContent());
         } else{
-            throw new RuntimeException("권한이 없는 유저입니다.");
+            throw new InvalidAccessException();
         }
 
         return new PostResponse(post);
@@ -81,16 +83,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse deletePost(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
+            throw new NoSuchPostException();
         });
         if (isPostDeleted(post)){
-            throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+            throw new NoSuchPostException();
         }
 
         if (member.equals(post.getMember())){
             post.deletePost();
         } else{
-            throw new RuntimeException("권한이 없는 유저입니다.");
+            throw new InvalidAccessException();
         }
         return new PostResponse(post);
     }
@@ -98,10 +100,10 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostLikeResponse pushPostLike(Member member, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지않은 게시글입니다.");
+            throw new NoSuchPostException();
         });
         if (isPostDeleted(post)){
-            throw new IllegalArgumentException("삭제된 게시글에는 좋아요를 누를 수 없습니다.");
+            throw new NoSuchPostException();
         }
         PostLike postLike = postLikeRepository.findByMemberIdAndPostId(member.getId(), postId).orElse(null);
         boolean flag = true;

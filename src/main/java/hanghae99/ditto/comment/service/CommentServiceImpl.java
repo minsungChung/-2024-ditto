@@ -1,5 +1,6 @@
 package hanghae99.ditto.comment.service;
 
+import hanghae99.ditto.auth.exception.InvalidAccessException;
 import hanghae99.ditto.comment.domain.Comment;
 import hanghae99.ditto.comment.domain.CommentLike;
 import hanghae99.ditto.comment.domain.CommentLikeRepository;
@@ -7,6 +8,7 @@ import hanghae99.ditto.comment.domain.CommentRepository;
 import hanghae99.ditto.comment.dto.request.CommentRequest;
 import hanghae99.ditto.comment.dto.response.CommentLikeResponse;
 import hanghae99.ditto.comment.dto.response.CommentResponse;
+import hanghae99.ditto.comment.exception.NoSuchCommentException;
 import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.FollowRepository;
 import hanghae99.ditto.member.domain.Member;
@@ -14,6 +16,7 @@ import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
 import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.domain.PostRepository;
+import hanghae99.ditto.post.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,16 +67,16 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponse updateComment(Member member, Long postId, Long commentId, CommentRequest commentRequest) {
         checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
+            throw new NoSuchCommentException();
         });
         if (member.equals(comment.getMember())){
             if (!isCommentDeleted(comment)) {
                 comment.updateContent(commentRequest.getContent());
             } else {
-                throw new IllegalStateException("삭제한 댓글은 수정할 수 없습니다.");
+                throw new NoSuchCommentException();
             }
         } else{
-            throw new RuntimeException("권한이 없는 멤버입니다.");
+            throw new InvalidAccessException();
         }
         return new CommentResponse(comment);
     }
@@ -82,16 +85,16 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponse deleteComment(Member member,Long postId, Long commentId) {
         checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
+            throw new NoSuchCommentException();
         });
         if (member.equals(comment.getMember())){
             if (!isCommentDeleted(comment)){
                 comment.deleteComment();
             } else {
-                throw new IllegalStateException("이미 삭제된 댓글입니다.");
+                throw new NoSuchCommentException();
             }
         }else {
-            throw new RuntimeException("권한이 없는 멤버입니다.");
+            throw new InvalidAccessException();
         }
         return new CommentResponse(comment);
     }
@@ -100,10 +103,10 @@ public class CommentServiceImpl implements CommentService{
     public CommentLikeResponse pushCommentLike(Member member, Long postId, Long commentId){
         Post post = checkPostAvailability(postId);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 댓글입니다.");
+            throw new NoSuchCommentException();
         });
         if (isCommentDeleted(comment)){
-            throw new IllegalStateException("삭제된 댓글입니다.");
+            throw new NoSuchCommentException();
         }
         CommentLike commentLike = commentLikeRepository.findByMemberIdAndCommentId(member.getId(), commentId).orElse(null);
 
@@ -142,10 +145,10 @@ public class CommentServiceImpl implements CommentService{
 
     public Post checkPostAvailability(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
-            throw new IllegalArgumentException("유효하지 않은 게시글입니다.");
+            throw new NoSuchPostException();
         });
         if (post.getStatus().equals(UsageStatus.DELETED)){
-            throw new IllegalArgumentException("삭제된 게시글입니다.");
+            throw new NoSuchPostException();
         }
 
         return post;
