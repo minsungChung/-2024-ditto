@@ -4,12 +4,14 @@ import hanghae99.ditto.newsfeed.dto.response.NewsfeedResponse;
 import hanghae99.ditto.newsfeed.service.NewsfeedService;
 import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,12 +21,12 @@ public class NewsfeedController {
     private final NewsfeedService newsfeedService;
 
     @GetMapping
-    public List<NewsfeedResponse> showNewsfeed(){
-        return newsfeedService.showNewsfeed();
+    public Page<NewsfeedResponse> showNewsfeed(@PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
+        return newsfeedService.showNewsfeed(pageable);
     }
 
     @GetMapping("/posts")
-    public List<PostResponse> showPostNewsfeed(){
-        return newsfeedService.showPostNewsfeed();
+    public Page<PostResponse> showPostNewsfeed(@PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC)Pageable pageable){
+        return newsfeedService.showPostNewsfeed(pageable);
     }
 }

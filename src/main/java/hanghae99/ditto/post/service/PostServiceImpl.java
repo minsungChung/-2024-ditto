@@ -29,14 +29,14 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     public PostResponse uploadPost(PostRequest postRequest) {
+        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Post post = Post.builder()
-                .member((Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .member(member)
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .build();
         postRepository.save(post);
 
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         followRepository.findAllByToMemberId(member.getId()).forEach(
                 follow -> {
                     newsfeedService.createPostNewsfeed(follow.getFromMember(), post);

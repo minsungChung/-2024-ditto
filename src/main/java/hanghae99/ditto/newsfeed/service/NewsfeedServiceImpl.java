@@ -1,6 +1,5 @@
 package hanghae99.ditto.newsfeed.service;
 
-import hanghae99.ditto.global.entity.UsageStatus;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.newsfeed.domain.Newsfeed;
@@ -12,12 +11,11 @@ import hanghae99.ditto.newsfeed.dto.response.NewsfeedResponse;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.dto.response.PostResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +26,17 @@ public class NewsfeedServiceImpl implements NewsfeedService{
     private final MemberRepository memberRepository;
     private final NewsfeedPostRepository newsfeedPostRepository;
 
-    public List<NewsfeedResponse> showNewsfeed(){
+    public Page<NewsfeedResponse> showNewsfeed(Pageable pageable){
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Newsfeed> newsfeeds = newsfeedRepository.findAllByFeedMemberId(member.getId());
-        return newsfeeds.stream().filter(newsfeed -> newsfeed.getStatus().equals(UsageStatus.ACTIVE)).map(newsfeed ->
-                new NewsfeedResponse(newsfeed.getMessage())).collect(Collectors.toList());
+        Page<Newsfeed> newsfeeds = newsfeedRepository.findAllByFeedMemberId(member.getId(), pageable);
+        return newsfeeds.map(newsfeed -> new NewsfeedResponse(newsfeed.getMessage()));
     }
 
-    public List<PostResponse> showPostNewsfeed(){
+    public Page<PostResponse> showPostNewsfeed(Pageable pageable){
         Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<NewsfeedPost> postNewsfeeds = newsfeedPostRepository.findAllByFeedMemberId(member.getId());
-        // 지워지지 않은 게시글일 때만 가져오기
-        return postNewsfeeds.stream().filter(newsfeedPost -> newsfeedPost.getPost().getStatus().equals(UsageStatus.ACTIVE))
-                .map(newsfeedPost -> new PostResponse(newsfeedPost.getPost())).collect(Collectors.toList());
+        Page<NewsfeedPost> postNewsfeeds = newsfeedPostRepository.findAllByFeedMemberId(member.getId(), pageable);
+
+        return postNewsfeeds.map(newsfeedPost -> new PostResponse(newsfeedPost.getPost()));
     }
 
     @Transactional

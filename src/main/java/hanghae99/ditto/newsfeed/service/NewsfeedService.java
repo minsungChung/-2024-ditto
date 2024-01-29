@@ -5,15 +5,15 @@ import hanghae99.ditto.newsfeed.dto.request.NewsfeedRequest;
 import hanghae99.ditto.newsfeed.dto.response.NewsfeedResponse;
 import hanghae99.ditto.post.domain.Post;
 import hanghae99.ditto.post.dto.response.PostResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface NewsfeedService {
-    List<NewsfeedResponse> showNewsfeed();
+    Page<NewsfeedResponse> showNewsfeed(Pageable pageable);
 
     void createNewsfeed(NewsfeedRequest newsfeedRequest);
 
-    List<PostResponse> showPostNewsfeed();
+    Page<PostResponse> showPostNewsfeed(Pageable pageable);
 
     void createPostNewsfeed(Member feedMember, Post post);
 }
