@@ -23,15 +23,21 @@ public class MemberAuthenticationCodeEntity extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
+    @Column(name = "is_authenticated", nullable = false)
+    private boolean isAuthenticated;
+
     public MemberAuthenticationCodeEntity(String email, String code){
         this.email = email;
         this.code = code;
         this.endDate = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
         this.status = UsageStatus.ACTIVE;
+        this.isAuthenticated = false;
     }
 
     public void deleteCode(){
         this.status = UsageStatus.DELETED;
     }
+
+    public void authenticateEmail() { this.isAuthenticated = true;}
 
 }

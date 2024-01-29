@@ -96,14 +96,8 @@ public class AuthService {
 
         // 입력한 인증 코드가 일치하는 지 검증
         if (memberAuthenticationCodeEntity.getCode().equals(authenticateCodeRequest.getCode())){
-
+            memberAuthenticationCodeEntity.authenticateEmail();
             memberAuthenticationCodeEntity.deleteCode();
-
-            // 해당 멤버 status 인증됨으로 변경
-            Member member = memberRepository.findByEmail(authenticateCodeRequest.getEmail()).orElseThrow(() -> {
-                throw new IllegalArgumentException("유효하지 않은 이메일입니다.");
-            });
-            member.verifiedWithEmail();
 
             return new ResponseEntity<>(
                     new EmailAuthenticationResponse(0, "인증 성공"), HttpStatus.OK
