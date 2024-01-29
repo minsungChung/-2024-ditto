@@ -1,5 +1,6 @@
 package hanghae99.ditto.member.service;
 
+import hanghae99.ditto.auth.domain.MemberAuthenticationCodeRepository;
 import hanghae99.ditto.member.domain.Member;
 import hanghae99.ditto.member.domain.MemberRepository;
 import hanghae99.ditto.member.dto.request.MemberInfoRequest;
@@ -19,8 +20,12 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberAuthenticationCodeRepository memberAuthenticationCodeRepository;
 
     public MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest){
+        memberAuthenticationCodeRepository.findByEmailAndIsAuthenticatedIsTrue(memberJoinRequest.getEmail()).orElseThrow(()->{
+            throw new IllegalArgumentException("인증되지 않은 이메일은 가입하실 수 없습니다.");
+        });
 
         if (memberRepository.existsByEmail(memberJoinRequest.getEmail())){
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
