@@ -6,3 +6,9 @@ https://www.erdcloud.com/d/YBTYngkcd2vKCfcdn
 
 ## API 설계
 https://docs.google.com/spreadsheets/d/1KY0EpgeIB0Vx0SFpF8PicqwhC3ilaQwU/edit#gid=1099168351
+
+## Docker Compose 명령어
+```
+$ docker compose up
+$ docker compose down
+```
