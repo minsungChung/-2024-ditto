@@ -1,0 +1,8 @@
+services:
+  app:
+    container_name: ditto-app
+    ports:
+      - "8080:8080"
+    build:
+      dockerfile: Dockerfile
+    restart: always
