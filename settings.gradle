@@ -1,1 +1,7 @@
 rootProject.name = 'ditto'
+include 'ditto-module-activity'
+include 'ditto-module-newsfeed'
+include 'ditto-module-user'
+include 'ditto-module-common'
+include 'ditto-module-activity'
+
