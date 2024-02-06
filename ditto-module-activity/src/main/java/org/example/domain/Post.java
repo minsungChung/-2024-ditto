@@ -1,0 +1,55 @@
+package org.example.domain;
+
+import org.example.global.entity.BaseEntity;
+import org.example.global.entity.UsageStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+@Getter
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Post extends BaseEntity {
+
+    @Column(name="member_id", nullable = false)
+    private Long memberId;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @Column(name = "likes", nullable = false)
+    @ColumnDefault("0")
+    private long likes;
+
+    @Column(name = "views", nullable = false)
+    @ColumnDefault("0")
+    private long views;
+
+    @Builder
+    public Post(Long memberId, String title, String content){
+        this.memberId = memberId;
+        this.title = title;
+        this.content = content;
+        this.status = UsageStatus.ACTIVE;
+    }
+
+    public void updatePost(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
+
+    public void deletePost(){
+        this.status = UsageStatus.DELETED;
+    }
+
+    public void addView(){ this.views += 1;}
+
+    public void addLike(){ this.likes += 1;}
+
+    public void subLike() { this.likes -= 1;}
+
+}
