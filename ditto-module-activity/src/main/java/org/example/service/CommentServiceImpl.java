@@ -1,6 +1,8 @@
 package org.example.service;
 
+import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
+import org.example.global.dto.MemberDto;
 import org.example.global.exception.InvalidAccessException;
 import org.example.domain.*;
 import org.example.dto.request.CommentRequest;
@@ -27,6 +29,7 @@ public class CommentServiceImpl implements CommentService{
     private final CommentLikeRepository commentLikeRepository;
     private final FollowRepository followRepository;
     private final NewsfeedApi newsfeedApi;
+    private final MemberApi memberApi;
 
     @Transactional
     public CommentResponse uploadComment(Long memberId, Long postId, CommentRequest commentRequest) {
@@ -44,14 +47,17 @@ public class CommentServiceImpl implements CommentService{
                     newsfeedApi.createNewsfeed(newsfeedRequest);
                 }
         );
-
-        return new CommentResponse(comment);
+        MemberDto member = memberApi.findById(memberId).getResult();
+        return new CommentResponse(member.getMemberName(), comment);
     }
 
     public List<CommentResponse> getComments(Long postId) {
         checkPostAvailability(postId);
         return commentRepository.findAllByPostId(postId).stream().map(
-                comment -> new CommentResponse(comment)
+                comment -> {
+                    MemberDto member = memberApi.findById(comment.getMemberId()).getResult();
+                    return new CommentResponse(member.getMemberName(), comment);
+                }
         ).collect(Collectors.toList());
 
     }
@@ -71,7 +77,8 @@ public class CommentServiceImpl implements CommentService{
         } else{
             throw new InvalidAccessException();
         }
-        return new CommentResponse(comment);
+        MemberDto member = memberApi.findById(comment.getMemberId()).getResult();
+        return new CommentResponse(member.getMemberName(), comment);
     }
 
     @Transactional
@@ -89,7 +96,8 @@ public class CommentServiceImpl implements CommentService{
         }else {
             throw new InvalidAccessException();
         }
-        return new CommentResponse(comment);
+        MemberDto member = memberApi.findById(comment.getMemberId()).getResult();
+        return new CommentResponse(member.getMemberName(), comment);
     }
 
     @Transactional

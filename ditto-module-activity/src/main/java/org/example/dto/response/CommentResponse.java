@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentResponse {
     private Long commentId;
+    private String memberName;
     private String content;
     private LocalDateTime createDate;
     private long likes;
 
-    public CommentResponse(Comment comment){
-        this(comment.getId(), comment.getContent(), comment.getCreateDate(), comment.getLikes());
+    public CommentResponse(String memberName, Comment comment){
+        this(comment.getId(), memberName, comment.getContent(), comment.getCreateDate(), comment.getLikes());
     }
 }
