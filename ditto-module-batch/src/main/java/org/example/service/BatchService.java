@@ -50,7 +50,7 @@ public class BatchService {
 
         return lst.stream().map(s -> {
             Map sa = (Map)s;
-            return new CompanyDto(sa.get("stockName").toString(), sa.get("itemCode").toString());
+            return new CompanyDto(0L, sa.get("stockName").toString(), sa.get("itemCode").toString(), "");
         }).collect(Collectors.toList());
     }
 }
