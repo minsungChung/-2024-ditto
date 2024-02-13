@@ -1,7 +1,10 @@
 package org.example.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
+import org.example.controller.api.StockApi;
+import org.example.dto.response.PostSimpleRes;
 import org.example.global.dto.NewsfeedPostRequest;
 import org.example.dto.response.PostResponse;
 import org.example.global.dto.PostDto;
@@ -27,15 +30,18 @@ public class PostServiceImpl implements PostService {
     private final PostLikeRepository postLikeRepository;
     private final FollowRepository followRepository;
     private final NewsfeedApi newsfeedApi;
+    private final StockApi stockApi;
+    private final MemberApi memberApi;
 
     @Transactional
     public PostResponse uploadPost(Long memberId, PostRequest postRequest) {
         Post post = Post.builder()
                 .memberId(memberId)
+                .stockId(postRequest.getStockId())
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .build();
-        Post save = postRepository.save(post);
+        postRepository.save(post);
 
         followRepository.findAllByToMemberId(memberId).forEach(
                 follow -> {
@@ -47,7 +53,10 @@ public class PostServiceImpl implements PostService {
                 }
         );
 
-        return new PostResponse(post);
+        String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
+        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+
+        return new PostResponse(post, stockName, memberName);
     }
 
     @Transactional
@@ -63,11 +72,15 @@ public class PostServiceImpl implements PostService {
         if (!memberId.equals(post.getMemberId())){
             post.addView();
         }
-        return new PostResponse(post);
+
+        String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
+        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+
+        return new PostResponse(post, stockName, memberName);
     }
 
     @Transactional
-    public PostResponse updatePost(Long memberId, Long postId, PostRequest postRequest){
+    public PostSimpleRes updatePost(Long memberId, Long postId, PostRequest postRequest){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -81,11 +94,11 @@ public class PostServiceImpl implements PostService {
             throw new InvalidAccessException();
         }
 
-        return new PostResponse(post);
+        return new PostSimpleRes(post);
     }
 
     @Transactional
-    public PostResponse deletePost(Long memberId, Long postId){
+    public PostSimpleRes deletePost(Long memberId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -98,7 +111,7 @@ public class PostServiceImpl implements PostService {
         } else{
             throw new InvalidAccessException();
         }
-        return new PostResponse(post);
+        return new PostSimpleRes(post);
     }
 
     @Transactional

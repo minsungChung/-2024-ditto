@@ -2,6 +2,7 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.CompanyDto;
+import org.example.global.dto.StockDto;
 import org.example.global.response.BaseResponse;
 import org.example.service.StockService;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,10 @@ public class StockController {
 
     private final StockService stockService;
 
+    @GetMapping("{stockId}")
+    public BaseResponse<StockDto> findByStockId(@PathVariable("stockId") Long stockId){
+        return new BaseResponse<>(stockService.findStockById(stockId));
+    }
     @GetMapping("/kospi")
     public BaseResponse<Page<CompanyDto>> showKospiStocks(@PageableDefault(size = 100) Pageable pageable){
         return new BaseResponse<>(stockService.findKospiStocks(pageable));

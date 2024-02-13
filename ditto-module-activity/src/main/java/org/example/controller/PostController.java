@@ -2,6 +2,7 @@ package org.example.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.response.PostResponse;
+import org.example.dto.response.PostSimpleRes;
 import org.example.global.dto.PostDto;
 import org.example.global.response.BaseResponse;
 import org.example.dto.response.PostLikeResponse;
@@ -21,8 +22,7 @@ public class PostController {
 
     @PostMapping
     public BaseResponse<PostResponse> uploadPost(@RequestHeader("memberId") Long memberId, @Valid @RequestBody PostRequest postRequest){
-        log.info(String.valueOf(memberId));
-        log.info(postRequest.getContent());
+
         return new BaseResponse<>(postService.uploadPost(memberId, postRequest));
     }
 
@@ -32,12 +32,12 @@ public class PostController {
 //    }
 
     @PatchMapping("/{postId}")
-    public BaseResponse<PostResponse> updatePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
+    public BaseResponse<PostSimpleRes> updatePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
         return new BaseResponse<>(postService.updatePost(memberId, postId, postRequest));
     }
 
     @DeleteMapping("/{postId}")
-    public BaseResponse<PostResponse> deletePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId){
+    public BaseResponse<PostSimpleRes> deletePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId){
         return new BaseResponse<>(postService.deletePost(memberId, postId));
     }
 
