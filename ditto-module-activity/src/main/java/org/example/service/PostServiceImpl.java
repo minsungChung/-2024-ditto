@@ -1,7 +1,10 @@
 package org.example.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
+import org.example.controller.api.StockApi;
+import org.example.dto.response.PostSimpleRes;
 import org.example.global.dto.NewsfeedPostRequest;
 import org.example.dto.response.PostResponse;
 import org.example.global.dto.PostDto;
@@ -14,6 +17,8 @@ import org.example.dto.request.PostRequest;
 import org.example.dto.response.PostLikeResponse;
 import org.example.global.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,15 +32,18 @@ public class PostServiceImpl implements PostService {
     private final PostLikeRepository postLikeRepository;
     private final FollowRepository followRepository;
     private final NewsfeedApi newsfeedApi;
+    private final StockApi stockApi;
+    private final MemberApi memberApi;
 
     @Transactional
     public PostResponse uploadPost(Long memberId, PostRequest postRequest) {
         Post post = Post.builder()
                 .memberId(memberId)
+                .stockId(postRequest.getStockId())
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .build();
-        Post save = postRepository.save(post);
+        postRepository.save(post);
 
         followRepository.findAllByToMemberId(memberId).forEach(
                 follow -> {
@@ -47,7 +55,10 @@ public class PostServiceImpl implements PostService {
                 }
         );
 
-        return new PostResponse(post);
+        String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
+        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+
+        return new PostResponse(post, stockName, memberName);
     }
 
     @Transactional
@@ -63,11 +74,15 @@ public class PostServiceImpl implements PostService {
         if (!memberId.equals(post.getMemberId())){
             post.addView();
         }
-        return new PostResponse(post);
+
+        String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
+        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+
+        return new PostResponse(post, stockName, memberName);
     }
 
     @Transactional
-    public PostResponse updatePost(Long memberId, Long postId, PostRequest postRequest){
+    public PostSimpleRes updatePost(Long memberId, Long postId, PostRequest postRequest){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -81,11 +96,11 @@ public class PostServiceImpl implements PostService {
             throw new InvalidAccessException();
         }
 
-        return new PostResponse(post);
+        return new PostSimpleRes(post);
     }
 
     @Transactional
-    public PostResponse deletePost(Long memberId, Long postId){
+    public PostSimpleRes deletePost(Long memberId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -98,7 +113,7 @@ public class PostServiceImpl implements PostService {
         } else{
             throw new InvalidAccessException();
         }
-        return new PostResponse(post);
+        return new PostSimpleRes(post);
     }
 
     @Transactional
@@ -151,6 +166,19 @@ public class PostServiceImpl implements PostService {
                 .createDate(post.getCreateDate())
                 .likes(post.getLikes())
                 .views(post.getViews()).build();
+    }
+
+    public Page<PostDto> getPostsByStockId(Long stockId, Pageable pageable){
+        Page<Post> posts = postRepository.findAllByStockId(stockId, pageable);
+
+        return posts.map(post -> PostDto.builder()
+                .postId(post.getId())
+                .writerId(post.getMemberId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createDate(post.getCreateDate())
+                .likes(post.getLikes())
+                .views(post.getViews()).build());
     }
 
     public boolean isPostDeleted(Post post){

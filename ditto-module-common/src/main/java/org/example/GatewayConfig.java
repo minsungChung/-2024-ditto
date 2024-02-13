@@ -27,6 +27,10 @@ public class GatewayConfig {
                         .filters(f -> f.filter(authFilter))
                         .uri("http://localhost:8082")
                 )
+                .route("batchAPI", r -> r.path("/api/batch/**", "/api/chart/**", "/api/stocks/**")
+                        .filters(f -> f.filter(authFilter))
+                        .uri("http://localhost:8086")
+                )
                 .build();
     }
 }
