@@ -10,6 +10,9 @@ import org.example.service.PostService;
 import org.example.dto.request.PostRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -49,6 +52,11 @@ public class PostController {
     @GetMapping("/{postId}")
     public BaseResponse<PostDto> getOnePost(@PathVariable("postId")Long postId){
         return new BaseResponse<>(postService.getOnePost(postId));
+    }
+
+    @GetMapping("/stocks/{stockId}")
+    public BaseResponse<Page<PostDto>> findPostsByStockId(@PathVariable("stockId") Long stockId, @PageableDefault(size = 30) Pageable pageable){
+        return new BaseResponse<>(postService.getPostsByStockId(stockId, pageable));
     }
 
 

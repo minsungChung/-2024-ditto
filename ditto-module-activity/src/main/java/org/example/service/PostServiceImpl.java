@@ -17,6 +17,8 @@ import org.example.dto.request.PostRequest;
 import org.example.dto.response.PostLikeResponse;
 import org.example.global.exception.NoSuchPostException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -164,6 +166,19 @@ public class PostServiceImpl implements PostService {
                 .createDate(post.getCreateDate())
                 .likes(post.getLikes())
                 .views(post.getViews()).build();
+    }
+
+    public Page<PostDto> getPostsByStockId(Long stockId, Pageable pageable){
+        Page<Post> posts = postRepository.findAllByStockId(stockId, pageable);
+
+        return posts.map(post -> PostDto.builder()
+                .postId(post.getId())
+                .writerId(post.getMemberId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createDate(post.getCreateDate())
+                .likes(post.getLikes())
+                .views(post.getViews()).build());
     }
 
     public boolean isPostDeleted(Post post){

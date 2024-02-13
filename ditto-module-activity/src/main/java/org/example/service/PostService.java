@@ -5,6 +5,8 @@ import org.example.dto.response.PostLikeResponse;
 import org.example.dto.response.PostResponse;
 import org.example.dto.response.PostSimpleRes;
 import org.example.global.dto.PostDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
     PostResponse uploadPost(Long memberId, PostRequest postRequest);
@@ -18,4 +20,6 @@ public interface PostService {
     PostLikeResponse pushPostLike(Long memberId, Long postId);
 
     PostDto getOnePost(Long postId);
+
+    Page<PostDto> getPostsByStockId(Long stockId, Pageable pageable);
 }
