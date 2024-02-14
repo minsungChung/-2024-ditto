@@ -22,4 +22,10 @@ public interface PostService {
     PostDto getOnePost(Long postId);
 
     Page<PostDto> getPostsByStockId(Long stockId, Pageable pageable);
+
+    Page<PostSimpleRes> getPostsByTitle(String title, Pageable pageable);
+
+    Page<PostSimpleRes> getPostsByContent(String content, Pageable pageable);
+
+    Page<PostSimpleRes> getPostsByMemberName(String memberName, Pageable pageable);
 }

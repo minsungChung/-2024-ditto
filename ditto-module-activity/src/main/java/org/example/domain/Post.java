@@ -15,6 +15,9 @@ public class Post extends BaseEntity {
     @Column(name="member_id", nullable = false)
     private Long memberId;
 
+    @Column(name = "member_name", nullable = false)
+    private String memberName;
+
     @Column(name = "stock_id", nullable = false)
     private Long stockId;
 
@@ -33,8 +36,9 @@ public class Post extends BaseEntity {
     private long views;
 
     @Builder
-    public Post(Long memberId, Long stockId, String title, String content){
+    public Post(Long memberId, String memberName, Long stockId, String title, String content){
         this.memberId = memberId;
+        this.memberName = memberName;
         this.stockId = stockId;
         this.title = title;
         this.content = content;

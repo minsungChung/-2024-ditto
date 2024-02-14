@@ -59,5 +59,20 @@ public class PostController {
         return new BaseResponse<>(postService.getPostsByStockId(stockId, pageable));
     }
 
+    @GetMapping("/title/{title}")
+    public BaseResponse<Page<PostSimpleRes>> findPostsByTitle(@PathVariable("title") String title, @PageableDefault(size = 10) Pageable pageable){
+        return new BaseResponse<>(postService.getPostsByTitle(title, pageable));
+    }
+
+    @GetMapping("/content/{content}")
+    public BaseResponse<Page<PostSimpleRes>> findPostsByContent(@PathVariable("content") String content, @PageableDefault(size = 10) Pageable pageable){
+        return new BaseResponse<>(postService.getPostsByContent(content, pageable));
+    }
+
+    @GetMapping("/member/{memberName}")
+    public BaseResponse<Page<PostSimpleRes>> findPostsByMemberName(@PathVariable("memberName") String memberName, @PageableDefault(size = 10) Pageable pageable){
+        return new BaseResponse<>(postService.getPostsByMemberName(memberName, pageable));
+    }
+
 
 }

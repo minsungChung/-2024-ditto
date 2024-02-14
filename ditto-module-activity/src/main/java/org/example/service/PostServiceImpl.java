@@ -37,8 +37,12 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     public PostResponse uploadPost(Long memberId, PostRequest postRequest) {
+        String stockName = stockApi.findByStockId(postRequest.getStockId()).getResult().getStockName();
+        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+
         Post post = Post.builder()
                 .memberId(memberId)
+                .memberName(memberName)
                 .stockId(postRequest.getStockId())
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
@@ -54,9 +58,6 @@ public class PostServiceImpl implements PostService {
                     newsfeedApi.createNewsfeedPost(newsfeedPostRequest);
                 }
         );
-
-        String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
-        String memberName = memberApi.findById(memberId).getResult().getMemberName();
 
         return new PostResponse(post, stockName, memberName);
     }
@@ -76,9 +77,8 @@ public class PostServiceImpl implements PostService {
         }
 
         String stockName = stockApi.findByStockId(post.getStockId()).getResult().getStockName();
-        String memberName = memberApi.findById(memberId).getResult().getMemberName();
 
-        return new PostResponse(post, stockName, memberName);
+        return new PostResponse(post, stockName, post.getMemberName());
     }
 
     @Transactional
@@ -179,6 +179,24 @@ public class PostServiceImpl implements PostService {
                 .createDate(post.getCreateDate())
                 .likes(post.getLikes())
                 .views(post.getViews()).build());
+    }
+
+    public Page<PostSimpleRes> getPostsByTitle(String title, Pageable pageable){
+        Page<Post> posts = postRepository.findAllByTitleContains(title, pageable);
+
+        return posts.map(post -> new PostSimpleRes(post));
+    }
+
+    public Page<PostSimpleRes> getPostsByContent(String content, Pageable pageable){
+        Page<Post> posts = postRepository.findAllByContentContains(content, pageable);
+
+        return posts.map(post -> new PostSimpleRes(post));
+    }
+
+    public Page<PostSimpleRes> getPostsByMemberName(String memberName, Pageable pageable){
+        Page<Post> posts = postRepository.findAllByMemberName(memberName, pageable);
+
+        return posts.map(post -> new PostSimpleRes(post));
     }
 
     public boolean isPostDeleted(Post post){
