@@ -51,21 +51,21 @@ public class BatchConfig {
                 .build();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
-                                                                     JobRepository jobRepository, BatchProperties properties, Collection<Job> jobs){
-        JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
-        String jobNames = properties.getJob().getName();
-        if (StringUtils.hasText(jobNames)){
-            if (jobs.stream().map(Job::getName).noneMatch(s -> s.equals(jobNames))) {
-                throw new IllegalArgumentException(jobNames + "는 등록되지 않은 job name입니다.");
-            }
-            runner.setJobName(jobNames);
-        }
-        return runner;
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    @ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+//    public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
+//                                                                     JobRepository jobRepository, BatchProperties properties, Collection<Job> jobs){
+//        JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
+//        String jobNames = properties.getJob().getName();
+//        if (StringUtils.hasText(jobNames)){
+//            if (jobs.stream().map(Job::getName).noneMatch(s -> s.equals(jobNames))) {
+//                throw new IllegalArgumentException(jobNames + "는 등록되지 않은 job name입니다.");
+//            }
+//            runner.setJobName(jobNames);
+//        }
+//        return runner;
+//    }
 
     @Bean
     public PriceItemReader reader(){
