@@ -11,4 +11,6 @@ public interface PricePerDayRepository extends JpaRepository<PricePerDay, Long> 
     List<PricePerDay> findTop300ByCompanyIdOrderByDateDesc(Long companyId);
     List<PricePerDay> findTop900ByCompanyIdOrderByDateDesc(Long companyId);
     List<PricePerDay> findTop1500ByCompanyIdOrderByDateDesc(Long companyId);
+
+    List<PricePerDay> findAllByCompanyIdOrderByDateAsc(Long companyId);
 }

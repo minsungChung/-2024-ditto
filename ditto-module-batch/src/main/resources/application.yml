@@ -1,20 +1,20 @@
 server:
   port: 8086
 spring:
-  batch:
-    job:
-      enabled: true
-      name: ${job.name:NONE}
-    jdbc:
-      initialize-schema: always
-  docker:
-    compose:
-      lifecycle-management: start_and_stop
-      start:
-        command: up
-      stop:
-        command: down
-        timeout: 1m
+#  batch:
+#    job:
+#      enabled: true
+#      name: ${job.name:NONE}
+#    jdbc:
+#      initialize-schema: always
+#  docker:
+#    compose:
+#      lifecycle-management: start_and_stop
+#      start:
+#        command: up
+#      stop:
+#        command: down
+#        timeout: 1m
   config:
     import:
       database.properties
