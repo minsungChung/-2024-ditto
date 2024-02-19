@@ -2,9 +2,11 @@ package org.example.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.domain.BollingerBand;
 import org.example.domain.MovingAverageLine;
 import org.example.domain.PricePerDay;
-import org.example.dto.MovingAvgLineDto;
+import org.example.dto.IndicatorDto;
+import org.example.repository.BollingerBandRepository;
 import org.example.repository.MovingAvgLineRepository;
 import org.example.repository.PricePerDayRepository;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MovingAverageLineService {
+public class IndicatorService {
 
     private final PricePerDayRepository pricePerDayRepository;
     private final MovingAvgLineRepository movingAvgLineRepository;
-    public MovingAvgLineDto saveMovingAvgLine() {
+    private final BollingerBandRepository bollingerBandRepository;
+    public IndicatorDto saveIndicators() {
         List<PricePerDay> priceList = pricePerDayRepository.findAllByCompanyIdOrderByDateAsc(1L);
 
         int twelve = 0;
@@ -32,6 +35,16 @@ public class MovingAverageLineService {
             twelve += ppd.getLastPrice();
             twenty += ppd.getLastPrice();
             twentySix += ppd.getLastPrice();
+
+            if(i >= 19){
+                List<Double> bands = calculateBand(prices, twenty / 20, i);
+                bollingerBandRepository.save(BollingerBand.builder()
+                        .company(ppd.getCompany())
+                        .date(ppd.getDate())
+                        .middleBand(twenty/20)
+                        .upperBand(bands.get(0))
+                        .lowerBand(bands.get(1)).build());
+            }
 
             if (i < 11){
                 movingAvgLineRepository.save(MovingAverageLine.builder()
@@ -69,6 +82,24 @@ public class MovingAverageLineService {
                 twentySix -= prices.get(i-25);
             }
         }
-        return new MovingAvgLineDto(1L);
+        return new IndicatorDto(1L);
+    }
+
+    private List<Double> calculateBand(List<Integer> prices, double mean, int endIndex){
+        List<Double> bands = new ArrayList<>();
+        double standardDeviation = calculateStandardDeviation(prices, mean, endIndex);
+        bands.add(mean + 2*standardDeviation);
+        bands.add(mean - 2*standardDeviation);
+        return bands;
+    }
+
+
+    private double calculateStandardDeviation(List<Integer> prices, double mean, int endIndex){
+        int sum = 0;
+        for(int i = endIndex-19; i <= endIndex; i++){
+            sum += Math.pow(prices.get(i) - mean, 2);
+        }
+
+        return Math.sqrt(sum / 20);
     }
 }

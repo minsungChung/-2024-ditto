@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovingAvgLineDto {
+public class IndicatorDto {
     private Long companyId;
 }
