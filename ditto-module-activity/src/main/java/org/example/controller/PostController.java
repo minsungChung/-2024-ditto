@@ -25,7 +25,6 @@ public class PostController {
 
     @PostMapping
     public BaseResponse<PostResponse> uploadPost(@RequestHeader("memberId") Long memberId, @Valid @RequestBody PostRequest postRequest){
-
         return new BaseResponse<>(postService.uploadPost(memberId, postRequest));
     }
 
