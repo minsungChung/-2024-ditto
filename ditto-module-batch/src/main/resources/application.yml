@@ -1,12 +1,12 @@
 server:
   port: 8086
 spring:
-#  batch:
-#    job:
-#      enabled: true
-#      name: ${job.name:NONE}
-#    jdbc:
-#      initialize-schema: always
+  batch:
+    job:
+      enabled: false
+      name: ${job.name:NONE}
+    jdbc:
+      initialize-schema: always
 #  docker:
 #    compose:
 #      lifecycle-management: start_and_stop
