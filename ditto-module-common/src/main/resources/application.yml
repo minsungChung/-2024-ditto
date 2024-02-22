@@ -1,9 +1,6 @@
 server:
   port: 8090
 spring:
-  main:
-    web-application-type: reactive
-
   docker:
     compose:
       lifecycle-management: start_and_stop

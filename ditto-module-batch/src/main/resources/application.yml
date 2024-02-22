@@ -1,14 +1,20 @@
 server:
   port: 8086
 spring:
-  docker:
-    compose:
-      lifecycle-management: start_and_stop
-      start:
-        command: up
-      stop:
-        command: down
-        timeout: 1m
+  batch:
+    job:
+      enabled: false
+      name: ${job.name:NONE}
+    jdbc:
+      initialize-schema: always
+#  docker:
+#    compose:
+#      lifecycle-management: start_and_stop
+#      start:
+#        command: up
+#      stop:
+#        command: down
+#        timeout: 1m
   config:
     import:
       database.properties
@@ -24,7 +30,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true

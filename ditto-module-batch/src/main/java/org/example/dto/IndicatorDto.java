@@ -1,4 +1,4 @@
-package org.example.dto.response;
+package org.example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FollowResponse {
-    private Long fromMemberId;
-    private Long toMemberId;
+public class IndicatorDto {
+    private Long companyId;
 }
