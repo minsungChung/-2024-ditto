@@ -86,15 +86,12 @@ public class MemberServiceImpl implements MemberService {
             throw new NoSuchMemberException();
         });
 
-        log.info(String.valueOf(myId));
-        log.info(String.valueOf(findMember.getId()));
         if (myId == findMember.getId()){
             String newPassword = memberPasswordRequest.getNewPassword();
             // 기존 비밀번호와 일치하면
             if (bCryptPasswordEncoder.matches(newPassword, findMember.getPassword())){
                 throw new SamePasswordException();
             } else {
-                log.info("여기까진 들어온다!");
                 findMember.updateMemberPassword(bCryptPasswordEncoder.encode(newPassword));
             }
         } else {

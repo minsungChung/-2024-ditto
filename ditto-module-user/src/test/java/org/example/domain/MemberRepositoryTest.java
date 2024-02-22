@@ -1,7 +1,7 @@
 package org.example.domain;
 
 import org.example.UserApplication;
-import org.example.global.config.JpaConfig;
+import org.example.config.JpaConfig;
 import org.example.global.exception.NoSuchMemberException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
