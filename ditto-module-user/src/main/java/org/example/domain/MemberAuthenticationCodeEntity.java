@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 @Entity
 @NoArgsConstructor
 public class MemberAuthenticationCodeEntity extends BaseEntity {
+
     @Column(name = "email", nullable = false)
     private String email;
 

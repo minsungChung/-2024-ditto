@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  main:
+    web-application-type: reactive
   docker:
     compose:
       lifecycle-management: start_and_stop
@@ -28,6 +30,8 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    defer-datasource-initialization: true
+
   mail:
     host: smtp.gmail.com
     port: 587

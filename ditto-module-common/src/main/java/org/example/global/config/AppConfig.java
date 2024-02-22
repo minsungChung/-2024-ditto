@@ -17,5 +17,4 @@ public class AppConfig {
     public BCryptPasswordEncoder encodePwd(){
         return new BCryptPasswordEncoder();
     }
-
 }
