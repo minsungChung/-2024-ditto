@@ -11,7 +11,7 @@ public class RouterValidator {
 
     public static final List<String> openApiEndpoints = List.of(
             "/api/members", "/api/auth/email-authentication", "/api/auth/authentication-code", "/api/auth/login",
-            "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers"
+            "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers",
             "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers", "/api/chart", "/api/stocks", "/api/batch"
     );
 
