@@ -1,5 +1,6 @@
 package org.example.domain;
 
+import jakarta.persistence.Version;
 import org.example.global.entity.BaseEntity;
 import org.example.global.entity.UsageStatus;
 import jakarta.persistence.Column;
@@ -35,6 +36,9 @@ public class Post extends BaseEntity {
     @ColumnDefault("0")
     private long views;
 
+    @Version
+    private Long version;
+
     @Builder
     public Post(Long memberId, String memberName, Long stockId, String title, String content){
         this.memberId = memberId;
@@ -56,8 +60,7 @@ public class Post extends BaseEntity {
 
     public void addView(){ this.views += 1;}
 
-    public void addLike(){ this.likes += 1;}
-
-    public void subLike() { this.likes -= 1;}
+    public void addLike() {this.likes += 1;}
+    public void subLike() {this.likes -= 1;}
 
 }
