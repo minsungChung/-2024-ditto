@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.aop.Retry;
 import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
 import org.example.controller.api.StockApi;
@@ -116,32 +117,37 @@ public class PostServiceImpl implements PostService {
         return new PostSimpleRes(post);
     }
 
+
     @Transactional
+    @Retry
     public PostLikeResponse pushPostLike(Long memberId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
-        if (isPostDeleted(post)){
+        if (isPostDeleted(post)) {
             throw new NoSuchPostException();
         }
         PostLike postLike = postLikeRepository.findByMemberIdAndPostId(memberId, postId).orElse(null);
         boolean flag = true;
 
-        if (postLike != null){
-            if (postLike.getStatus().equals(UsageStatus.ACTIVE)){
+        if (postLike != null) {
+            if (postLike.getStatus().equals(UsageStatus.ACTIVE)) {
                 postLike.deletePostLike();
+                post.subLike();
                 flag = false;
             } else {
                 postLike.pushPostLike();
+                post.addLike();
             }
         } else {
             postLike = PostLike.builder()
                     .memberId(memberId)
-                    .post(post).build();
+                    .postId(postId).build();
             postLikeRepository.save(postLike);
+            post.addLike();
         }
 
-        if (flag){
+        if (flag) {
             Long receiverId = post.getMemberId();
             followRepository.findAllByToMemberId(memberId).forEach(
                     follow -> {
