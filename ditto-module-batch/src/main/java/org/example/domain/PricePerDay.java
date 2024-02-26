@@ -16,9 +16,8 @@ public class PricePerDay {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -39,8 +38,8 @@ public class PricePerDay {
     private Long tradingVolume;
 
     @Builder
-    public PricePerDay(Company company, LocalDate date, Integer startPrice, Integer highPrice, Integer lowPrice, Integer lastPrice, Long tradingVolume){
-        this.company = company;
+    public PricePerDay(Long companyId, LocalDate date, Integer startPrice, Integer highPrice, Integer lowPrice, Integer lastPrice, Long tradingVolume){
+        this.companyId = companyId;
         this.date = date;
         this.startPrice = startPrice;
         this.highPrice = highPrice;

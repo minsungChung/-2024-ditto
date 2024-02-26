@@ -42,7 +42,7 @@ public class PriceItemReader implements ItemReader<List<PricePerDay>> {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMdd");
 
             String[] r = result.split("\\|");
-            PricePerDay ppd = PricePerDay.builder().company(company)
+            PricePerDay ppd = PricePerDay.builder().companyId(company.getId())
                         .date(LocalDate.parse(r[0], format))
                         .startPrice(Integer.parseInt(r[1]))
                         .highPrice(Integer.parseInt(r[2]))

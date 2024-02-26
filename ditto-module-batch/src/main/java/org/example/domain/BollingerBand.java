@@ -16,9 +16,8 @@ public class BollingerBand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -33,8 +32,8 @@ public class BollingerBand {
     private double lowerBand;
 
     @Builder
-    public BollingerBand(Company company, LocalDate date, double middleBand, double upperBand, double lowerBand){
-        this.company = company;
+    public BollingerBand(Long companyId, LocalDate date, double middleBand, double upperBand, double lowerBand){
+        this.companyId = companyId;
         this.date = date;
         this.middleBand = middleBand;
         this.upperBand = upperBand;

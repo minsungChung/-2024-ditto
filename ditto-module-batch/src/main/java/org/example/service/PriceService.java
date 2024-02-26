@@ -47,7 +47,7 @@ public class PriceService {
         List<PricePerDay> priceList = results.stream().map(res -> {
             String[] r = res.split("\\|");
             log.info(r[0] + r[1]);
-            return PricePerDay.builder().company(company)
+            return PricePerDay.builder().companyId(company.getId())
                     .date(LocalDate.parse(r[0], format))
                     .startPrice(Integer.parseInt(r[1]))
                     .highPrice(Integer.parseInt(r[2]))
