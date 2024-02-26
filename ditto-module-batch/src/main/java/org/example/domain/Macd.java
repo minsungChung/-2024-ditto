@@ -16,9 +16,8 @@ public class Macd {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -29,8 +28,8 @@ public class Macd {
     @Column(name = "signal_line", nullable = false)
     private double signalLine;
     @Builder
-    public Macd(Company company, LocalDate date, int macdLine, double signalLine){
-        this.company = company;
+    public Macd(Long companyId, LocalDate date, int macdLine, double signalLine){
+        this.companyId = companyId;
         this.date = date;
         this.macdLine = macdLine;
         this.signalLine = signalLine;

@@ -44,7 +44,7 @@ public class IndicatorService {
             if(i >= 19){
                 List<Double> bands = calculateBand(prices, twenty / 20, i);
                 bollingerBandRepository.save(BollingerBand.builder()
-                        .company(ppd.getCompany())
+                        .companyId(ppd.getCompanyId())
                         .date(ppd.getDate())
                         .middleBand(twenty/20)
                         .upperBand(bands.get(0))
@@ -53,14 +53,14 @@ public class IndicatorService {
 
             if (i < 11){
                 movingAvgLineRepository.save(MovingAverageLine.builder()
-                        .company(ppd.getCompany())
+                        .companyId(ppd.getCompanyId())
                         .twelveDaysAvg(0)
                         .twentyDaysAvg(0)
                         .twentySixDaysAvg(0)
                         .date(ppd.getDate()).build());
             } else if (i < 19) {
                 movingAvgLineRepository.save(MovingAverageLine.builder()
-                        .company(ppd.getCompany())
+                        .companyId(ppd.getCompanyId())
                         .twelveDaysAvg(twelve/12)
                         .twentyDaysAvg(0)
                         .twentySixDaysAvg(0)
@@ -68,7 +68,7 @@ public class IndicatorService {
                 twelve -= prices.get(i-11);
             } else if (i < 25) {
                 movingAvgLineRepository.save(MovingAverageLine.builder()
-                        .company(ppd.getCompany())
+                        .companyId(ppd.getCompanyId())
                         .twelveDaysAvg(twelve/12)
                         .twentyDaysAvg(twenty/20)
                         .twentySixDaysAvg(0)
@@ -77,7 +77,7 @@ public class IndicatorService {
                 twenty -= prices.get(i-19);
             } else {
                 movingAvgLineRepository.save(MovingAverageLine.builder()
-                        .company(ppd.getCompany())
+                        .companyId(ppd.getCompanyId())
                         .twelveDaysAvg(twelve/12)
                         .twentyDaysAvg(twenty/20)
                         .twentySixDaysAvg(twentySix/26)
@@ -93,7 +93,7 @@ public class IndicatorService {
 
         for (int i = 0; i < macdLine.size(); i++){
             macdRepository.save(Macd.builder()
-                    .company(priceList.get(0).getCompany())
+                    .companyId(priceList.get(0).getCompanyId())
                     .date(priceList.get(0).getDate())
                     .macdLine(macdLine.get(i))
                     .signalLine(signalLine.get(i)).build());

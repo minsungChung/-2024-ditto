@@ -16,9 +16,8 @@ public class MovingAverageLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;
 
     @Column(name = "date")
     private LocalDate date;
@@ -33,8 +32,8 @@ public class MovingAverageLine {
     private int twentySixDaysAvg;
 
     @Builder
-    public MovingAverageLine(Company company, int twelveDaysAvg, int twentyDaysAvg, int twentySixDaysAvg, LocalDate date){
-        this.company = company;
+    public MovingAverageLine(Long companyId, int twelveDaysAvg, int twentyDaysAvg, int twentySixDaysAvg, LocalDate date){
+        this.companyId = companyId;
         this.twelveDaysAvg = twelveDaysAvg;
         this.twentyDaysAvg = twentyDaysAvg;
         this.twentySixDaysAvg = twentySixDaysAvg;
