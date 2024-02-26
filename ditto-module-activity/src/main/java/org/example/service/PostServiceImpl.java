@@ -121,7 +121,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Retry
     public PostLikeResponse pushPostLike(Long memberId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> {
+        Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
         if (isPostDeleted(post)) {

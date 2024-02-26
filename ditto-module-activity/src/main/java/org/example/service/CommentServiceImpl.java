@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.aop.Retry;
 import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
 import org.example.global.dto.MemberDto;
@@ -35,7 +36,7 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponse uploadComment(Long memberId, Long postId, CommentRequest commentRequest) {
         Post post = checkPostAvailability(postId);
         Comment comment = Comment.builder()
-                .post(post)
+                .postId(postId)
                 .memberId(memberId)
                 .content(commentRequest.getContent()).build();
         commentRepository.save(comment);
@@ -101,9 +102,10 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Transactional
+    @Retry
     public CommentLikeResponse pushCommentLike(Long memberId, Long postId, Long commentId){
         Post post = checkPostAvailability(postId);
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
+        Comment comment = commentRepository.findByIdWithLock(commentId).orElseThrow(() -> {
             throw new NoSuchCommentException();
         });
         if (isCommentDeleted(comment)){
@@ -115,15 +117,18 @@ public class CommentServiceImpl implements CommentService{
         if (commentLike != null){
             if (commentLike.getStatus().equals(UsageStatus.ACTIVE)){
                 commentLike.deleteCommentLike();
+                comment.subLike();
                 flag = false;
             } else {
                 commentLike.pushCommentLike();
+                comment.addLike();
             }
         } else {
             commentLike = CommentLike.builder()
                     .memberId(memberId)
-                    .comment(comment).build();
+                    .commentId(commentId).build();
             commentLikeRepository.save(commentLike);
+            comment.addLike();
         }
 
         if (flag){

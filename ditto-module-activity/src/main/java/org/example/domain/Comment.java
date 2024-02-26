@@ -1,11 +1,8 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
 import org.example.global.entity.BaseEntity;
 import org.example.global.entity.UsageStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -14,9 +11,8 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @Column(name = "post_id", nullable = false)
+    private Long postId;
 
     @Column(name = "member_id", nullable = false)
     private Long memberId;
@@ -28,9 +24,12 @@ public class Comment extends BaseEntity {
     @ColumnDefault("0")
     private long likes;
 
+    @Version
+    private Long version;
+
     @Builder
-    public Comment(Post post, Long memberId, String content){
-        this.post = post;
+    public Comment(Long postId, Long memberId, String content){
+        this.postId = postId;
         this.memberId = memberId;
         this.content = content;
         this.status = UsageStatus.ACTIVE;
