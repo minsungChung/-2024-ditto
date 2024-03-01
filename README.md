@@ -28,6 +28,7 @@ https://www.erdcloud.com/d/YBTYngkcd2vKCfcdn
 https://docs.google.com/spreadsheets/d/1KY0EpgeIB0Vx0SFpF8PicqwhC3ilaQwU/edit#gid=1099168351
 
 # 프로젝트 구조 :globe_with_meridians:
+<img width="721" alt="스크린샷 2024-03-01 오후 4 37 48" src="https://github.com/minsungChung/2024-ditto/assets/116792686/551caf3c-4745-4538-ba50-8ecb2c19152d">
 
 ## Docker Compose 명령어
 ```
