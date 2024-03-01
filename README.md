@@ -11,7 +11,7 @@
 
 :seedling: 특정 종목의 게시판에 글을 작성하고 댓글을 달 수 있습니다.
 
-:seedling: 작성자 이름, 제목, 내용에 따라 글을 필터링 할 수 있습니다.
+:seedling: 작성자 이름, 제목, 내용에 따라 게시글을 필터링 할 수 있습니다.
 
 :seedling: KOSPI와 KOSDAQ의 종목들을 정렬할 수 있습니다. (이름 순, 코드 순)
 
@@ -30,6 +30,17 @@ https://docs.google.com/spreadsheets/d/1KY0EpgeIB0Vx0SFpF8PicqwhC3ilaQwU/edit#gi
 # 프로젝트 구조 :globe_with_meridians:
 <img width="721" alt="스크린샷 2024-03-01 오후 4 37 48" src="https://github.com/minsungChung/2024-ditto/assets/116792686/551caf3c-4745-4538-ba50-8ecb2c19152d">
 
+# 기술 스택 :toolbox:
+:seedling: Spring Boot 3.2 
+:seedling: Spring Data JPA 
+:seedling: Spring Gateway 4.1 
+:seedling: Spring Batch 5.0 
+
+:seedling: MySql 8.0 
+:seedling: AWS RDS 
+:seedling: Docker 
+:seedling: Jenkins 
+:seedling: Redis 
 ## Docker Compose 명령어
 ```
 $ docker compose up
