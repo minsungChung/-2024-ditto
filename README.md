@@ -6,7 +6,7 @@
 이동평균선, 볼린저밴드, MACD와 같은 지표도 제공하고 있습니다.
 사용자들은 팔로우 기능을 사용하여 팔로우하고 있는 사람들의 활동 내역을 확인할 수 있습니다.
 
-[![Tech Blog Badge](http://img.shields.io/badge/-Tech%20blog-black?style=flat-square&logo=github&link=[https://m1ndy5.tistory.com/](https://m1ndy5.tistory.com/category/Toy%20Projects/Ditto%20-%20Discuss%20Today%27s%20Topic))]([https://m1ndy5.tistory.com/](https://m1ndy5.tistory.com/category/Toy%20Projects/Ditto%20-%20Discuss%20Today%27s%20Topic))
+[![Tech Blog Badge](http://img.shields.io/badge/-Tech%20blog-black?style=flat-square&logo=github&link=https://m1ndy5.tistory.com/category/Toy%20Projects/Ditto%20-%20Discuss%20Today%27s%20Topic)](https://m1ndy5.tistory.com/category/Toy%20Projects/Ditto%20-%20Discuss%20Today%27s%20Topic))
 
 
 ## ERD 설계
