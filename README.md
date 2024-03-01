@@ -41,8 +41,8 @@ https://docs.google.com/spreadsheets/d/1KY0EpgeIB0Vx0SFpF8PicqwhC3ilaQwU/edit#gi
 :seedling: Docker 
 :seedling: Jenkins 
 :seedling: Redis 
-## Docker Compose 명령어
-```
-$ docker compose up
-$ docker compose down
-```
+
+# 트러블 슈팅 :handball_person:
+:seedling: 낙관적 락을 사용해 좋아요 동시성 문제 해결
+
+:seedling: batchUpdate를 사용해 데이터 저장 성능 향상
