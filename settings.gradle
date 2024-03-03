@@ -5,4 +5,5 @@ include 'ditto-module-user'
 include 'ditto-module-common'
 include 'ditto-module-batch'
 include 'ditto-module-gateway'
+include 'ditto-module-stock'
 

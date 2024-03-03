@@ -3,11 +3,12 @@ package org.example.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.Company;
+import org.example.domain.CompanyRepository;
 import org.example.domain.PricePerDay;
-import org.example.dto.ChartDto;
+import org.example.domain.PricePerDayRepository;
+import org.example.global.dto.ChartDto;
 import org.example.global.exception.NoSuchCompanyException;
-import org.example.repository.CompanyRepository;
-import org.example.repository.PricePerDayRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,11 @@ public class ChartService {
 
         List<PricePerDay> monthlyPriceList = pricePerDayRepository.findTop25ByCompanyIdOrderByDateDesc(company.getId());
 
-        return monthlyPriceList.stream().map(res -> new ChartDto(res)).collect(Collectors.toList());
+        return monthlyPriceList.stream().map(res -> ChartDto.builder()
+                .companyId(res.getCompanyId())
+                .lastPrice(res.getLastPrice())
+                .tradingVolume(res.getTradingVolume())
+                .date(res.getDate()).build()).collect(Collectors.toList());
     }
 
     public List<ChartDto> drawYearlyChart(String itemCode, int num) {
@@ -45,6 +50,10 @@ public class ChartService {
         }
 
 
-        return yearlyPriceList.stream().map(res -> new ChartDto(res)).collect(Collectors.toList());
+        return yearlyPriceList.stream().map(res -> ChartDto.builder()
+                .companyId(res.getCompanyId())
+                .lastPrice(res.getLastPrice())
+                .tradingVolume(res.getTradingVolume())
+                .date(res.getDate()).build()).collect(Collectors.toList());
     }
 }

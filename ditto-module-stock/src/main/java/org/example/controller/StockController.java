@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.dto.CompanyDto;
+import org.example.global.dto.CompanyDto;
 import org.example.global.dto.StockDto;
 import org.example.global.response.BaseResponse;
 import org.example.service.StockService;

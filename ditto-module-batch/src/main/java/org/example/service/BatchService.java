@@ -2,7 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.domain.Company;
-import org.example.dto.CompanyDto;
+import org.example.global.dto.CompanyDto;
 import org.example.repository.CompanyBulkRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

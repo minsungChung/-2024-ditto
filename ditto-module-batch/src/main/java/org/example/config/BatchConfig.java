@@ -3,6 +3,7 @@ package org.example.config;
 import lombok.RequiredArgsConstructor;
 import org.example.domain.PricePerDay;
 import org.example.repository.CompanyRepository;
+import org.example.repository.PriceBulkRepository;
 import org.example.repository.PricePerDayRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -33,47 +34,73 @@ public class BatchConfig {
 
     private final CompanyRepository companyRepository;
     private final PricePerDayRepository pricePerDayRepository;
+    private final PriceBulkRepository priceBulkRepository;
 
     @Bean
-    public Job todayScheduleJob(JobRepository jobRepository, Step todayScheduleStep){
-        return new JobBuilder("spring-batch", jobRepository)
+    public Job fiveYearsPriceJob(JobRepository jobRepository, Step fiveYearsPriceStep){
+        return new JobBuilder("five-years", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(todayScheduleStep)
+                .start(fiveYearsPriceStep)
                 .build();
     }
 
     @Bean
-    public Step todayScheduleStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
-        return new StepBuilder("today-schedule-step", jobRepository)
+    public Step fiveYearsPriceStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
+        return new StepBuilder("five-years-step", jobRepository)
                 .<List<PricePerDay>, List<PricePerDay>>chunk(1, transactionManager)
-                .reader(reader())
-                .writer(writer())
+                .reader(fiveReader())
+                .writer(fiveWriter())
                 .build();
     }
-
 //    @Bean
-//    @ConditionalOnMissingBean
-//    @ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
-//    public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
-//                                                                     JobRepository jobRepository, BatchProperties properties, Collection<Job> jobs){
-//        JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
-//        String jobNames = properties.getJob().getName();
-//        if (StringUtils.hasText(jobNames)){
-//            if (jobs.stream().map(Job::getName).noneMatch(s -> s.equals(jobNames))) {
-//                throw new IllegalArgumentException(jobNames + "는 등록되지 않은 job name입니다.");
-//            }
-//            runner.setJobName(jobNames);
-//        }
-//        return runner;
+//    public Job todayScheduleJob(JobRepository jobRepository, Step todayScheduleStep){
+//        return new JobBuilder("spring-batch", jobRepository)
+//                .incrementer(new RunIdIncrementer())
+//                .start(todayScheduleStep)
+//                .build();
+//    }
+//
+//    @Bean
+//    public Step todayScheduleStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
+//        return new StepBuilder("today-schedule-step", jobRepository)
+//                .<List<PricePerDay>, List<PricePerDay>>chunk(1, transactionManager)
+//                .reader(reader())
+//                .writer(writer())
+//                .build();
 //    }
 
     @Bean
-    public PriceItemReader reader(){
-        return new PriceItemReader(companyRepository);
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
+    public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer,
+                                                                     JobRepository jobRepository, BatchProperties properties, Collection<Job> jobs){
+        JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobLauncher, jobExplorer, jobRepository);
+        String jobNames = properties.getJob().getName();
+        if (StringUtils.hasText(jobNames)){
+            if (jobs.stream().map(Job::getName).noneMatch(s -> s.equals(jobNames))) {
+                throw new IllegalArgumentException(jobNames + "는 등록되지 않은 job name입니다.");
+            }
+            runner.setJobName(jobNames);
+        }
+        return runner;
     }
 
     @Bean
-    public PriceItemWriter writer(){
-        return new PriceItemWriter(pricePerDayRepository);
+    public FiveYearPriceItemReader fiveReader(){
+        return new FiveYearPriceItemReader(companyRepository);
     }
+
+    @Bean
+    public FiveYearPriceItemWriter fiveWriter(){
+        return new FiveYearPriceItemWriter(priceBulkRepository);
+    }
+//    @Bean
+//    public PriceItemReader reader(){
+//        return new PriceItemReader(companyRepository);
+//    }
+
+//    @Bean
+//    public PriceItemWriter writer(){
+//        return new PriceItemWriter(pricePerDayRepository);
+//    }
 }

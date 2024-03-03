@@ -2,7 +2,7 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.ChartDto;
+import org.example.global.dto.ChartDto;
 import org.example.global.response.BaseResponse;
 import org.example.service.ChartService;
 import org.springframework.web.bind.annotation.GetMapping;

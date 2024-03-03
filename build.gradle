@@ -127,4 +127,10 @@ project(":ditto-module-gateway"){
 	}
 }
 
+project(":ditto-module-stock"){
+	jar{
+		archivesBaseName = 'ditto-module-stock'
+	}
+}
+
 
