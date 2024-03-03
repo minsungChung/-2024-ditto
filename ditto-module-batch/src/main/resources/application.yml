@@ -4,7 +4,7 @@ spring:
   batch:
     job:
       enabled: false
-      name: ${job.name:NONE}
+      name: ${job.name:five-years}
     jdbc:
       initialize-schema: always
 #  docker:
@@ -30,7 +30,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
