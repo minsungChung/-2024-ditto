@@ -18,10 +18,7 @@
 :seedling: 이동평균선, 볼린저 밴드, MACD와 같은 기술적 분석 지표를 확인할 수 있습니다.
 
 
-# ERD & API 명세서 확인하기 :white_check_mark:
-:seedling: ERD
-
-https://www.erdcloud.com/d/YBTYngkcd2vKCfcdn
+#  API 명세서 확인하기 :white_check_mark:
 
 :seedling: API
 
