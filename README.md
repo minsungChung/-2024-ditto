@@ -42,4 +42,6 @@ https://docs.google.com/spreadsheets/d/1KY0EpgeIB0Vx0SFpF8PicqwhC3ilaQwU/edit#gi
 # 트러블 슈팅 :handball_person:
 :seedling: 낙관적 락을 사용해 좋아요 동시성 문제 해결
 
+:seedling: docker-compose를 통한 각 모듈 이미지 생성 및 관리
+
 :seedling: batchUpdate를 사용해 데이터 저장 성능 향상
