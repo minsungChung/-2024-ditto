@@ -6,10 +6,44 @@ services:
       - ./jenkins:/var/jenkins_home
     ports:
       - "8088:8080"
-#  app:
-#    container_name: batch-app
-#    ports:
-#      - "8086:8086"
-#    build:
-#      dockerfile: Dockerfile
-#    restart: always
+
+  activity:
+    container_name: activity
+    build:
+      context: ./ditto-module-activity
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./ditto-module-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+
+  newsfeed:
+    container_name: newsfeed
+    build:
+      context: ./ditto-module-newsfeed
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+
+  stock:
+    container_name: stock
+    build:
+      context: ./ditto-module-stock
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+
+  user:
+    container_name: user
+    build:
+      context: ./ditto-module-user
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+
