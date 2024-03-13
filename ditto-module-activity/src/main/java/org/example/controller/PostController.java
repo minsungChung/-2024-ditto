@@ -23,7 +23,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/")
     public BaseResponse<PostResponse> uploadPost(@RequestHeader("memberId") Long memberId, @Valid @RequestBody PostRequest postRequest){
         return new BaseResponse<>(postService.uploadPost(memberId, postRequest));
     }
