@@ -33,8 +33,8 @@ public class AuthController {
         return new BaseResponse<>(authService.login(loginRequest));
     }
 
-    @DeleteMapping("/logout")
-    public BaseResponse<String> logout(@Valid @RequestBody LogoutRequest logoutRequest){
-        return new BaseResponse<>(authService.logout(logoutRequest));
-    }
+//    @DeleteMapping("/logout")
+//    public BaseResponse<String> logout(@Valid @RequestBody LogoutRequest logoutRequest){
+//        return new BaseResponse<>(authService.logout(logoutRequest));
+//    }
 }

@@ -11,7 +11,7 @@ import org.example.dto.response.LoginResponse;
 import org.example.global.exception.InvalidAccessException;
 import org.example.global.exception.InvalidEmailException;
 import org.example.global.support.jwt.JwtTokenProvider;
-import org.example.global.support.redis.RedisUtil;
+//import org.example.global.support.redis.RedisUtil;
 import org.example.domain.Member;
 import org.example.domain.MemberRepository;
 import org.example.global.exception.NoSuchEmailException;
@@ -37,7 +37,7 @@ public class AuthService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
 
     @Transactional
     public EmailAuthenticationResponse sendEmailAuthentication(SendEmailAuthenticationRequest sendEmailAuthenticationRequest){
@@ -120,9 +120,9 @@ public class AuthService {
         }
     }
 
-    public String logout(LogoutRequest logoutRequest){
-        redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
-        return "로그아웃 완료";
-    }
+//    public String logout(LogoutRequest logoutRequest){
+//        redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
+//        return "로그아웃 완료";
+//    }
 
 }

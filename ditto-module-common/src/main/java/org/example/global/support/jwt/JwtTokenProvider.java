@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.global.support.redis.RedisUtil;
+//import org.example.global.support.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey = "secretKey";
     private final Long validityInMilliseconds = 1000L * 60 * 60;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
 
     @PostConstruct
     protected void init(){
@@ -56,10 +56,10 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token){
         try{
-            if (redisUtil.hasKeyBlackList(token)){
-                log.info("dfwef");
-                return false;
-            }
+//            if (redisUtil.hasKeyBlackList(token)){
+//                log.info("dfwef");
+//                return false;
+//            }
 
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
