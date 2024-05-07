@@ -59,3 +59,7 @@ security:
     token:
       secret-key: ${JWT_SECRET_KEY}
       expire-length: ${JWT_EXPIRE_LENGTH}
+
+mybatis:
+  config-location: classpath:mybatis/config/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mappers/*.xml
