@@ -7,6 +7,10 @@
         SELECT * FROM Member WHERE id = #{no}
     </select>
 
+    <select id="findMembers" resultType="map">
+        SELECT id as id, member_name as memberName, email as email, password as password FROM Member
+    </select>
+
     <insert id="insert" parameterType="org.example.domain.Member">
         INSERT INTO Member (bio, email, member_name, password, profile_image, last_login, status) VALUES (#{bio}, #{email}, #{memberName}, #{password}, #{profileImage}, #{lastLogin}, #{status})
     </insert>
