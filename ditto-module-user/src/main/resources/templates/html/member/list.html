@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout-sample}">
+
+<th:block layout:fragment="content">
+    <div class="row main-head ">
+        <div class="col-12 main-title ">
+            # Member List
+        </div>
+    </div>
+    <div class="row ">
+        <div class="table-responsive portlet">
+            <table class="table table-sm table-hover tb-success">
+                <thead>
+                    <tr class="center">
+                        <th>memberId</th>
+                        <th>memberName</th>
+                        <th>memberEmail</th>
+                        <th>memberPassword</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${not #lists.isEmpty(memberList)}" th:each="m : ${memberList}">
+                        <td th:text="${m.id}"></td>
+                        <td th:text="${m.memberName}"></td>
+                        <td th:text="${m.email}"></td>
+                        <td th:text="${m.password}"></td>
+                    </tr>
+                    <tr th:unless="${not #lists.isEmpty(memberList)}">
+                        <td colspan="7">등록된 회원의 정보가 없습니다.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</th:block>
+</html>
