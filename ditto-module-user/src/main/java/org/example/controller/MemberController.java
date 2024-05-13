@@ -24,7 +24,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/members")
-    public BaseResponse<MemberJoinResponse> joinMember(@Valid @RequestBody MemberJoinRequest memberJoinRequest){
+    public BaseResponse<MemberJoinResponse> joinMember(@Valid MemberJoinRequest memberJoinRequest){
+        log.info(memberJoinRequest.getMemberName());
         return new BaseResponse<>(memberService.saveMember(memberJoinRequest));
     }
 

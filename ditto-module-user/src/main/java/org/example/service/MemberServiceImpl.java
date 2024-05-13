@@ -16,10 +16,12 @@ import org.example.global.exception.NoSuchMemberException;
 import org.example.global.exception.SamePasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
 
 @Slf4j
 @Service
@@ -29,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberAuthenticationCodeRepository memberAuthenticationCodeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberJoinResponse saveMember(MemberJoinRequest memberJoinRequest){
         memberAuthenticationCodeRepository.findByEmailAndIsAuthenticatedIsTrue(memberJoinRequest.getEmail()).orElseThrow(()->{
@@ -40,9 +43,9 @@ public class MemberServiceImpl implements MemberService {
         }else {
             Member member = Member.builder()
                     .email(memberJoinRequest.getEmail())
-                    .password(bCryptPasswordEncoder.encode(memberJoinRequest.getPassword()))
+                    .password(passwordEncoder.encode(memberJoinRequest.getPassword()))
                     .memberName(memberJoinRequest.getMemberName())
-                    .profileImage(memberJoinRequest.getProfileImage())
+                    .profileImage("basicProfileImage")
                     .bio(memberJoinRequest.getBio())
                     .lastLogin(LocalDateTime.now()).build();
 

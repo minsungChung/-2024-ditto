@@ -23,4 +23,14 @@ public class MyController {
 
         return "html/member/list.html";
     }
+
+    @GetMapping("/login-page")
+    public String loginPage(){
+        return "html/member/login.html";
+    }
+
+    @GetMapping("/signup")
+    public String signUp(){
+        return "html/member/signup.html";
+    }
 }

@@ -3,19 +3,13 @@ package org.example.service;
 import org.example.domain.MemberAuthenticationCodeEntity;
 import org.example.domain.MemberAuthenticationCodeRepository;
 import org.example.dto.request.AuthenticateCodeRequest;
-import org.example.dto.request.LoginRequest;
-import org.example.dto.request.LogoutRequest;
 import org.example.dto.request.SendEmailAuthenticationRequest;
 import org.example.dto.response.EmailAuthenticationResponse;
-import org.example.dto.response.LoginResponse;
 import org.example.global.exception.InvalidAccessException;
 import org.example.global.exception.InvalidEmailException;
 import org.example.global.support.jwt.JwtTokenProvider;
 //import org.example.global.support.redis.RedisUtil;
-import org.example.domain.Member;
 import org.example.domain.MemberRepository;
-import org.example.global.exception.NoSuchEmailException;
-import org.example.global.exception.NoSuchMemberException;
 import org.example.global.entity.UsageStatus;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -101,24 +95,24 @@ public class AuthService {
         }
     }
 
-    @Transactional
-    public LoginResponse login(LoginRequest loginRequest){
-        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> {
-           throw new NoSuchEmailException();
-        });
-
-        if(member.getStatus().equals(UsageStatus.DELETED)){
-            throw new NoSuchMemberException();
-        }
-
-        if(!bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())){
-            throw new InvalidAccessException("로그인에 실패하셨습니다.");
-        } else{
-            String accessToken = jwtTokenProvider.createToken(member.getId());
-            member.updateLastLogin();
-            return new LoginResponse(member.getId(), accessToken);
-        }
-    }
+//    @Transactional
+//    public LoginResponse login(LoginRequest loginRequest){
+//        Member member = memberRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> {
+//           throw new NoSuchEmailException();
+//        });
+//
+//        if(member.getStatus().equals(UsageStatus.DELETED)){
+//            throw new NoSuchMemberException();
+//        }
+//
+//        if(!bCryptPasswordEncoder.matches(loginRequest.getPassword(), member.getPassword())){
+//            throw new InvalidAccessException("로그인에 실패하셨습니다.");
+//        } else{
+//            String accessToken = jwtTokenProvider.createToken(member.getEmail());
+//            member.updateLastLogin();
+//            return new LoginResponse(member.getId(), accessToken);
+//        }
+//    }
 
 //    public String logout(LogoutRequest logoutRequest){
 //        redisUtil.setBlackList(logoutRequest.getToken(), "accessToken", 5);
