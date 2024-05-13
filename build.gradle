@@ -50,6 +50,7 @@ subprojects {
 
 
 	dependencies {
+		implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 		// jdbc
 		implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 		// mybatis
@@ -88,6 +89,7 @@ subprojects {
 		runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 		annotationProcessor 'org.projectlombok:lombok'
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.springframework.security:spring-security-test'
 	}
 
 	tasks.named('test') {

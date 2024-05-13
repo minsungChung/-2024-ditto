@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,9 +25,6 @@ public class MemberJoinRequest {
     @NotBlank(message = "이름은 필수 입력 값입니다.")
     @Size(min = 1, max = 25)
     private String memberName;
-
-    @Size(min = 1, max = 300)
-    private String profileImage;
 
     @Size(min = 1, max = 100)
     private String bio;

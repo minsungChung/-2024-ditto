@@ -10,6 +10,7 @@ import org.example.global.exception.SamePasswordException;
 import org.example.repository.MemberMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class MyService {
 
     private static final Logger log = LoggerFactory.getLogger(MyService.class);
     private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public Member getMember(String no){
         return memberMapper.selectById(no);
@@ -35,8 +37,8 @@ public class MyService {
                 .memberName(memberJoinRequest.getMemberName())
                 .email(memberJoinRequest.getEmail())
                 .lastLogin(LocalDateTime.now())
-                .password(memberJoinRequest.getPassword())
-                .profileImage(memberJoinRequest.getProfileImage())
+                .password(passwordEncoder.encode(memberJoinRequest.getPassword()))
+                .profileImage("basicProfileImage")
                 .build();
         log.info(member.getMemberName());
         return memberMapper.insert(member);
