@@ -1,7 +1,9 @@
 package org.example.security;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,14 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
         log.info("로그인 성공 email: " + email);
 
-        response.sendRedirect("/members");
+        // 새로운 요청으로 forward
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/members");
+        dispatcher.forward(new HttpServletRequestWrapper(request) {
+            @Override
+            public String getMethod() {
+                return "GET";
+            }
+        }, response);
     }
 
     private String extractEmail(Authentication authentication){

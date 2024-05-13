@@ -10,21 +10,21 @@ services:
 #      ACCEPT_EULA: Y
 #      SA_PASSWORD: password1!
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
-    volumes:
-      - ./jenkins:/var/jenkins_home
-    ports:
-      - "8088:8080"
+#  jenkins:
+#    image: jenkins/jenkins:lts
+#    container_name: jenkins
+#    volumes:
+#      - ./jenkins:/var/jenkins_home
+#    ports:
+#      - "8088:8080"
 
-  activity:
-    container_name: activity
-    build:
-      context: ./ditto-module-activity
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+#  activity:
+#    container_name: activity
+#    build:
+#      context: ./ditto-module-activity
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
 
   gateway:
     container_name: gateway
@@ -33,46 +33,46 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8083:8083"
-    depends_on:
-      - activity
-    command:
-      - bash
-      - -c
-      - |
-        ./wait-for-it.sh activity:8081 -s -t 100
-        java -jar /gateway.jar
+#    depends_on:
+#      - activity
+#    command:
+#      - bash
+#      - -c
+#      - |
+#        ./wait-for-it.sh activity:8081 -s -t 100
+#        java -jar /gateway.jar
 
-  newsfeed:
-    container_name: newsfeed
-    build:
-      context: ./ditto-module-newsfeed
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    depends_on:
-      - gateway
-    command:
-      - bash
-      - -c
-      - |
-        ./wait-for-it.sh gateway:8083 -s -t 100
-        java -jar /newsfeed.jar
+#  newsfeed:
+#    container_name: newsfeed
+#    build:
+#      context: ./ditto-module-newsfeed
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8082:8082"
+#    depends_on:
+#      - gateway
+#    command:
+#      - bash
+#      - -c
+#      - |
+#        ./wait-for-it.sh gateway:8083 -s -t 100
+#        java -jar /newsfeed.jar
 
-  stock:
-    container_name: stock
-    build:
-      context: ./ditto-module-stock
-      dockerfile: Dockerfile
-    ports:
-      - "8091:8091"
-    depends_on:
-      - newsfeed
-    command:
-      - bash
-      - -c
-      - |
-        ./wait-for-it.sh newsfeed:8082 -s -t 100
-        java -jar /stock.jar
+#  stock:
+#    container_name: stock
+#    build:
+#      context: ./ditto-module-stock
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8091:8091"
+#    depends_on:
+#      - newsfeed
+#    command:
+#      - bash
+#      - -c
+#      - |
+#        ./wait-for-it.sh newsfeed:8082 -s -t 100
+#        java -jar /stock.jar
 
   user:
     container_name: user
@@ -81,12 +81,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8087:8087"
-    depends_on:
-      - stock
-    command:
-      - bash
-      - -c
-      - |
-        ./wait-for-it.sh stock:8091 -s -t 100
-        java -jar /user.jar
+#    depends_on:
+#      - stock
+#    command:
+#      - bash
+#      - -c
+#      - |
+#        ./wait-for-it.sh stock:8091 -s -t 100
+#        java -jar /user.jar
 
