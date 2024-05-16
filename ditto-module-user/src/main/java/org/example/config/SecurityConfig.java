@@ -43,9 +43,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("email")
                         .passwordParameter("password"))
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login-page")
-                        .invalidateHttpSession(true))
+                .logout(AbstractHttpConfigurer::disable)
                 .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
