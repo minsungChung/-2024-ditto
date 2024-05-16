@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .usernameParameter("email")
                         .passwordParameter("password"))
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/login-page")
                         .invalidateHttpSession(true))
                 .addFilterAt(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
