@@ -13,7 +13,7 @@ public class RouterValidator {
             "/api/members", "/api/auth/email-authentication", "/api/auth/authentication-code", "/api/auth/login",
             "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers",
             "/api/follow/{toMemberId}/followings", "/api/follow/{toMemberId}/followers",
-            "/login-page", "/login", "/signup"
+            "/login-page", "/login", "/signup", "/favicon.ico", "/login-success"
     );
 
     public Predicate<ServerHttpRequest> isSecured =

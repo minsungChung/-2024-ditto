@@ -42,8 +42,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getMemberId(String token){
-        return parseClaims(token).get("memberId", Long.class);
+    public String getMemberEmail(String token){
+        return parseClaims(token).get("email", String.class);
     }
 
     public Claims parseClaims(String token){
