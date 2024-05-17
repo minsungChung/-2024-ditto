@@ -6,6 +6,7 @@ import org.example.global.support.jwt.JwtTokenProvider;
 import org.example.security.JsonUsernamePasswordAuthenticationFilter;
 import org.example.security.LoginFailureHandler;
 import org.example.security.LoginSuccessJWTProvideHandler;
+import org.example.service.RefreshTokenService;
 import org.example.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -89,7 +91,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler(jwtTokenProvider);
+        return new LoginSuccessJWTProvideHandler(jwtTokenProvider, refreshTokenService);
     }
 
     @Bean

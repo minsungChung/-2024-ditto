@@ -19,7 +19,8 @@ public class JwtTokenProvider {
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey = "secretKey";
-    private final Long validityInMilliseconds = 1000L * 60 * 60;
+    private final Long validityInMilliseconds = 1000L * 60 * 5;
+    private final Long refreshTokenValidityInMilliseconds = 1000L * 60 * 60;
 //    private final RedisUtil redisUtil;
 
     @PostConstruct
@@ -36,6 +37,18 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String createRefreshToken(){
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+
+        return Jwts.builder()
+                .setSubject("RefreshToken")
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)

@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.service.MyService;
+import org.example.service.RefreshTokenService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class MyController {
 
     private final MyService myService;
+    private final RefreshTokenService refreshTokenService;
 
     @GetMapping("/members")
     public String list(Model model){
@@ -45,11 +47,31 @@ public class MyController {
         // 사용자 로그아웃 처리
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
 
+        // HttpServletRequest에서 RefreshToken 쿠키 가져오기
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("RefreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // RefreshToken을 로그아웃 처리나 토큰 무효화 작업에 사용
+        refreshTokenService.deleteRefreshToken(refreshToken);
+
         // 쿠키 삭제
-        Cookie cookie = new Cookie("Authorization", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        Cookie accessTokenCookie = new Cookie("Authorization", null);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("RefreshToken", null);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
 
         // 로그인 페이지로 리다이렉트
         return "redirect:http://localhost:8083/login-page";
