@@ -8,13 +8,14 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpCookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @Slf4j
 @RefreshScope
@@ -24,6 +25,7 @@ public class AuthFilter implements GatewayFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RouterValidator routerValidator;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -33,27 +35,44 @@ public class AuthFilter implements GatewayFilter {
         log.info(String.valueOf(routerValidator.isSecured.test(request)));
 
         if (routerValidator.isSecured.test(request)) {
-            String token = this.getAuthTokenFromCookie(request);
+            String accessToken = this.getAuthTokenFromCookie(request, "Authorization");
+            String refreshToken = this.getAuthTokenFromCookie(request, "RefreshToken");
 
-            log.info(token);
+            log.info("Access Token: {}", accessToken);
+            log.info("Refresh Token: {}", refreshToken);
 
-            if (token == null) {
+            if (accessToken == null) {
                 throw new IllegalArgumentException("Authorization cookie is missing");
             }
 
-            if (!jwtTokenProvider.validateToken(token)) {
-                throw new IllegalArgumentException("Invalid JWT token");
+            if (!jwtTokenProvider.validateToken(accessToken)) {
+                if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)){
+                    throw new IllegalArgumentException("Both Access and Refresh token are invalid");
+                }
+                else {
+                    // Refresh Token을 사용하여 새로운 Access Token을 발급받는 로직
+                    return webClientBuilder.build()
+                            .post()
+                            .uri("http://localhost:8083/api/token")
+                            .header("Authorization", refreshToken)
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .flatMap(newAccessToken -> {
+                                this.updateRequestWithNewToken(exchange, newAccessToken);
+                                return chain.filter(exchange);
+                            });
+                }
             }
 
-            this.updateRequest(exchange, token);
+            this.updateRequest(exchange, accessToken);
         }
         return chain.filter(exchange);
     }
 
-    private String getAuthTokenFromCookie(ServerHttpRequest request) {
+    private String getAuthTokenFromCookie(ServerHttpRequest request, String cookieName) {
         MultiValueMap<String, HttpCookie> cookies = request.getCookies();
-        if (cookies != null && cookies.containsKey("Authorization")) {
-            return cookies.getFirst("Authorization").getValue();
+        if (cookies != null && cookies.containsKey(cookieName)) {
+            return cookies.getFirst(cookieName).getValue();
         }
         return null;
     }
@@ -63,6 +82,16 @@ public class AuthFilter implements GatewayFilter {
         exchange.getRequest().mutate()
                 .header("memberId", String.valueOf(claims.get("email")))
                 .build();
+    }
+
+    private void updateRequestWithNewToken(ServerWebExchange exchange, String newAccessToken) {
+        exchange.getResponse().addCookie(ResponseCookie.from("Authorization", newAccessToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .build());
+
+        this.updateRequest(exchange, newAccessToken);
     }
 }
 
