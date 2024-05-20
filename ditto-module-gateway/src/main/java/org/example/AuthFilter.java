@@ -16,6 +16,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.IllformedLocaleException;
+
 
 @Slf4j
 @RefreshScope
@@ -41,12 +43,18 @@ public class AuthFilter implements GatewayFilter {
             log.info("Access Token: {}", accessToken);
             log.info("Refresh Token: {}", refreshToken);
 
-            if (accessToken == null) {
+            if (accessToken == null && refreshToken == null) {
                 throw new IllegalArgumentException("Authorization cookie is missing");
             }
 
-            if (!jwtTokenProvider.validateToken(accessToken)) {
-                if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)){
+            if (accessToken != null){
+                if (jwtTokenProvider.validateToken(accessToken)){
+                    this.updateRequest(exchange, accessToken);
+                } else {
+                    throw new IllformedLocaleException("Invalid Token");
+                }
+            } else {
+                if (!jwtTokenProvider.validateToken(refreshToken)){
                     throw new IllegalArgumentException("Both Access and Refresh token are invalid");
                 }
                 else {
@@ -63,8 +71,6 @@ public class AuthFilter implements GatewayFilter {
                             });
                 }
             }
-
-            this.updateRequest(exchange, accessToken);
         }
         return chain.filter(exchange);
     }
@@ -89,6 +95,7 @@ public class AuthFilter implements GatewayFilter {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
+                .maxAge(jwtTokenProvider.getValidityInMilliseconds()/1000)
                 .build());
 
         this.updateRequest(exchange, newAccessToken);

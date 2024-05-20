@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.global.support.jwt.JwtTokenProvider;
-import org.example.service.RefreshTokenService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,16 +21,13 @@ import java.io.IOException;
 public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String email = extractEmail(authentication);
         String accessToken = jwtTokenProvider.createToken(email);
-        String refreshToken = jwtTokenProvider.createRefreshToken();
-
-        refreshTokenService.saveRefreshToken(email, refreshToken);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
         log.info("로그인 성공 email: " + email);
 

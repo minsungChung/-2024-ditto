@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.service.MyService;
-import org.example.service.RefreshTokenService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,6 @@ import java.util.Map;
 public class MyController {
 
     private final MyService myService;
-    private final RefreshTokenService refreshTokenService;
 
     @GetMapping("/members")
     public String list(Model model){
@@ -59,8 +57,6 @@ public class MyController {
             }
         }
 
-        // RefreshToken을 로그아웃 처리나 토큰 무효화 작업에 사용
-        refreshTokenService.deleteRefreshToken(refreshToken);
 
         // 쿠키 삭제
         Cookie accessTokenCookie = new Cookie("Authorization", null);

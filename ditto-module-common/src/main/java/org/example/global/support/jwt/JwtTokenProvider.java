@@ -45,11 +45,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(){
+    public String createRefreshToken(String email){
+        Claims claims = Jwts.claims();
+        claims.put("email", email);
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshTokenValidityInSeconds*1000);
 
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject("RefreshToken")
                 .setIssuedAt(now)
                 .setExpiration(validity)

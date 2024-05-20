@@ -2,6 +2,7 @@ package org.example;
 
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
+@Getter
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
