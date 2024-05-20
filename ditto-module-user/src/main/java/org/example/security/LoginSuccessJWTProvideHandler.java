@@ -27,13 +27,22 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
                                         Authentication authentication) throws IOException, ServletException {
         String email = extractEmail(authentication);
         String accessToken = jwtTokenProvider.createToken(email);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
         log.info("로그인 성공 email: " + email);
 
         // JWT 토큰을 쿠키에 저장
-        Cookie cookie = new Cookie("Authorization", accessToken);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        Cookie accessTokencookie = new Cookie("Authorization", accessToken);
+        accessTokencookie.setPath("/");
+        accessTokencookie.setMaxAge(Math.toIntExact(jwtTokenProvider.getValidityInSeconds()));
+
+        // Refresh 토큰을 쿠키에 저장
+        Cookie refreshTokencookie = new Cookie("RefreshToken", refreshToken);
+        refreshTokencookie.setPath("/");
+        refreshTokencookie.setMaxAge(Math.toIntExact(jwtTokenProvider.getRefreshTokenValidityInSeconds()));
+
+        response.addCookie(accessTokencookie);
+        response.addCookie(refreshTokencookie);
 
         // 메인 페이지로 리다이렉트
         response.sendRedirect("http://localhost:8083/members");

@@ -103,4 +103,8 @@ public class MemberServiceImpl implements MemberService {
 
         return new UpdateMemberResponse(memberId);
     }
+
+    public Member findById(Long memberId){
+        return memberRepository.findById(memberId).orElseThrow(NoSuchMemberException::new);
+    }
 }

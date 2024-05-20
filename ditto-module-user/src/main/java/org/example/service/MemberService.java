@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.domain.Member;
 import org.example.dto.request.MemberInfoRequest;
 import org.example.dto.request.MemberJoinRequest;
 import org.example.dto.request.MemberPasswordRequest;
@@ -15,4 +16,6 @@ public interface MemberService {
     UpdateMemberResponse updateMemberPassword(Long myId, Long memberId, MemberPasswordRequest memberPasswordRequest);
 
     MemberDto getOneMember(Long memberId);
+
+    Member findById(Long memberId);
 }

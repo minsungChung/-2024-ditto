@@ -45,11 +45,29 @@ public class MyController {
         // 사용자 로그아웃 처리
         new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
 
+        // HttpServletRequest에서 RefreshToken 쿠키 가져오기
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("RefreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+
         // 쿠키 삭제
-        Cookie cookie = new Cookie("Authorization", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        Cookie accessTokenCookie = new Cookie("Authorization", null);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("RefreshToken", null);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
 
         // 로그인 페이지로 리다이렉트
         return "redirect:http://localhost:8083/login-page";
