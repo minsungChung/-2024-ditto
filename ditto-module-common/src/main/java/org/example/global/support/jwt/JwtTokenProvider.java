@@ -2,6 +2,7 @@ package org.example.global.support.jwt;
 
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.example.global.support.redis.RedisUtil;
@@ -13,14 +14,15 @@ import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
+@Getter
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey = "secretKey";
-    private final Long validityInMilliseconds = 1000L *  5;
-    private final Long refreshTokenValidityInMilliseconds = 1000L * 60;
+    private final Long validityInSeconds = 5L;
+    private final Long refreshTokenValidityInSeconds = 60L;
 //    private final RedisUtil redisUtil;
 
     @PostConstruct
@@ -33,7 +35,7 @@ public class JwtTokenProvider {
         claims.put("email", email);
 
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + validityInSeconds*1000);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -45,7 +47,7 @@ public class JwtTokenProvider {
 
     public String createRefreshToken(){
         Date now = new Date();
-        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+        Date validity = new Date(now.getTime() + refreshTokenValidityInSeconds*1000);
 
         return Jwts.builder()
                 .setSubject("RefreshToken")
