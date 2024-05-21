@@ -1,5 +1,9 @@
 package org.example.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.example.global.dto.MemberDto;
 import org.example.global.response.BaseResponse;
@@ -15,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Member", description = "Member API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -24,24 +29,42 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/members")
+    @Operation(summary = "회원가입", description = "사용자 정보를 입력하고 회원가입을 진행합니다.")
+    @ApiResponse(responseCode = "200", description = "성공")
     public BaseResponse<MemberJoinResponse> joinMember(@Valid MemberJoinRequest memberJoinRequest){
-        log.info(memberJoinRequest.getMemberName());
         return new BaseResponse<>(memberService.saveMember(memberJoinRequest));
     }
 
+
     @PatchMapping("/mypage/{memberId}")
-    public BaseResponse<UpdateMemberResponse> updateMemberInfo(@RequestHeader("memberId") Long myId, @PathVariable("memberId") Long memberId, @Valid @RequestBody MemberInfoRequest memberInfoRequest){
-        log.info(String.valueOf(myId));
+    @Operation(summary = "사용자 정보 변경", description = "비밀번호를 제외한 사용자 정보를 변경합니다.")
+    @ApiResponse(responseCode = "200", description = "성공")
+    public BaseResponse<UpdateMemberResponse> updateMemberInfo(
+            @Parameter(description = "인가된 사용자 아이디")
+            @RequestHeader("memberId") Long myId,
+            @Parameter(description = "변경할 사용자 아이디")
+            @PathVariable("memberId") Long memberId,
+            @Valid @RequestBody MemberInfoRequest memberInfoRequest){
         return new BaseResponse<>(memberService.updateMemberInfo(myId, memberId, memberInfoRequest));
     }
 
+
     @PatchMapping("/mypage/{memberId}/password")
-    public BaseResponse<UpdateMemberResponse> updateMemberPassword(@RequestHeader("memberId") Long myId, @PathVariable("memberId") Long memberId,@Valid @RequestBody MemberPasswordRequest memberPasswordRequest){
+    @Operation(summary = "사용자 비밀번호 변경", description = "비밀번호 정보를 변경합니다.")
+    @ApiResponse(responseCode = "200", description = "성공")
+    public BaseResponse<UpdateMemberResponse> updateMemberPassword(
+            @Parameter(description = "인가된 사용자 아이디")
+            @RequestHeader("memberId") Long myId,
+            @Parameter(description = "변경할 사용자 아이디")
+            @PathVariable("memberId") Long memberId,
+            @Valid @RequestBody MemberPasswordRequest memberPasswordRequest){
         return new BaseResponse<>(memberService.updateMemberPassword(myId, memberId, memberPasswordRequest));
     }
 
     @GetMapping("/members/{memberId}")
-    public BaseResponse<MemberDto> getMember(@PathVariable("memberId")Long memberId){
+    @Operation(summary = "사용자 정보 조회", description = "해당 사용자 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "성공")
+    public BaseResponse<MemberDto> getMember(@Parameter(description = "조회할 사용자 아이디") @PathVariable("memberId")Long memberId){
         return new BaseResponse<>(memberService.getOneMember(memberId));
     }
 
