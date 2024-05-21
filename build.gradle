@@ -50,6 +50,8 @@ subprojects {
 
 
 	dependencies {
+		// swagger
+		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 		implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 		// jdbc
 		implementation 'org.springframework.boot:spring-boot-starter-jdbc'

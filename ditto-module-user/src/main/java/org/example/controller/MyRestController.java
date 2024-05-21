@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import groovy.util.logging.Slf4j;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.domain.Member;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-
+@Tag(name = "Mybatis", description = "Mybatis API")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
