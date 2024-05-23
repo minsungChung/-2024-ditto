@@ -17,6 +17,7 @@ import java.util.List;
 public class BatchController {
     private final BatchService batchService;
     private final PriceService priceService;
+
     @PostMapping
     public BaseResponse<String> saveStockCodes() {
         return new BaseResponse<>(batchService.saveStockCodes());

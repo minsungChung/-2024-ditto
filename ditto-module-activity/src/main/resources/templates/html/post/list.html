@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout-sample}">
+
+<th:block layout:fragment="content">
+    <div class="row main-head ">
+        <div class="col-12 main-title ">
+            # Post List
+        </div>
+    </div>
+    <div class="row ">
+        <div class="table-responsive portlet">
+            <table class="table table-sm table-hover tb-success">
+                <thead>
+                <tr class="center">
+                    <th>postId</th>
+                    <th>memberName</th>
+                    <th>title</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${not #lists.isEmpty(posts)}" th:each="p : ${posts}">
+                    <td th:text="${p.id}"></td>
+                    <td th:text="${p.memberName}"></td>
+                    <td>
+                        <a th:href="@{/posts/{id}(id=${p.id})}" th:text="${p.title}"></a>
+                    </td>
+                </tr>
+                <tr th:unless="${not #lists.isEmpty(posts)}">
+                    <td colspan="7">등록된 게시글이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="location.href='/logout'">로그아웃</button>
+</th:block>
+</html>

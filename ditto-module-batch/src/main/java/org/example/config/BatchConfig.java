@@ -36,38 +36,38 @@ public class BatchConfig {
     private final PricePerDayRepository pricePerDayRepository;
     private final PriceBulkRepository priceBulkRepository;
 
-    @Bean
-    public Job fiveYearsPriceJob(JobRepository jobRepository, Step fiveYearsPriceStep){
-        return new JobBuilder("five-years", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .start(fiveYearsPriceStep)
-                .build();
-    }
-
-    @Bean
-    public Step fiveYearsPriceStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
-        return new StepBuilder("five-years-step", jobRepository)
-                .<List<PricePerDay>, List<PricePerDay>>chunk(1, transactionManager)
-                .reader(fiveReader())
-                .writer(fiveWriter())
-                .build();
-    }
 //    @Bean
-//    public Job todayScheduleJob(JobRepository jobRepository, Step todayScheduleStep){
-//        return new JobBuilder("spring-batch", jobRepository)
+//    public Job fiveYearsPriceJob(JobRepository jobRepository, Step fiveYearsPriceStep){
+//        return new JobBuilder("five-years", jobRepository)
 //                .incrementer(new RunIdIncrementer())
-//                .start(todayScheduleStep)
+//                .start(fiveYearsPriceStep)
 //                .build();
 //    }
 //
 //    @Bean
-//    public Step todayScheduleStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
-//        return new StepBuilder("today-schedule-step", jobRepository)
+//    public Step fiveYearsPriceStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
+//        return new StepBuilder("five-years-step", jobRepository)
 //                .<List<PricePerDay>, List<PricePerDay>>chunk(1, transactionManager)
-//                .reader(reader())
-//                .writer(writer())
+//                .reader(fiveReader())
+//                .writer(fiveWriter())
 //                .build();
 //    }
+    @Bean
+    public Job todayScheduleJob(JobRepository jobRepository, Step todayScheduleStep){
+        return new JobBuilder("spring-batch", jobRepository)
+                .incrementer(new RunIdIncrementer())
+                .start(todayScheduleStep)
+                .build();
+    }
+
+    @Bean
+    public Step todayScheduleStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
+        return new StepBuilder("today-schedule-step", jobRepository)
+                .<List<PricePerDay>, List<PricePerDay>>chunk(1, transactionManager)
+                .reader(reader())
+                .writer(writer())
+                .build();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -85,22 +85,22 @@ public class BatchConfig {
         return runner;
     }
 
+//    @Bean
+//    public FiveYearPriceItemReader fiveReader(){
+//        return new FiveYearPriceItemReader(companyRepository);
+//    }
+//
+//    @Bean
+//    public FiveYearPriceItemWriter fiveWriter(){
+//        return new FiveYearPriceItemWriter(priceBulkRepository);
+//    }
     @Bean
-    public FiveYearPriceItemReader fiveReader(){
-        return new FiveYearPriceItemReader(companyRepository);
+    public PriceItemReader reader(){
+        return new PriceItemReader(companyRepository);
     }
 
     @Bean
-    public FiveYearPriceItemWriter fiveWriter(){
-        return new FiveYearPriceItemWriter(priceBulkRepository);
+    public PriceItemWriter writer(){
+        return new PriceItemWriter(pricePerDayRepository);
     }
-//    @Bean
-//    public PriceItemReader reader(){
-//        return new PriceItemReader(companyRepository);
-//    }
-
-//    @Bean
-//    public PriceItemWriter writer(){
-//        return new PriceItemWriter(pricePerDayRepository);
-//    }
 }

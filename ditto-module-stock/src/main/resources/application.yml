@@ -22,7 +22,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -55,4 +55,4 @@ security:
       secret-key: ${JWT_SECRET_KEY}
       expire-length: ${JWT_EXPIRE_LENGTH}
 server:
-  port: 8082
+  port: 8091

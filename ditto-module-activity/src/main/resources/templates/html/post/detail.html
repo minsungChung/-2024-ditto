@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout-sample}">
+
+<th:block layout:fragment="content">
+    <div class="row main-head ">
+        <div class="col-12 main-title ">
+            # Post Detail
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h2 th:text="${post.title}">Post Title</h2>
+            <p th:text="${post.memberName}">Member Name</p>
+            <p th:text="${post.content}">Post Content</p>
+        </div>
+    </div>
+    <button type="button" class="btn btn-secondary" onclick="location.href='/posts'">Back to Posts</button>
+</th:block>
+</html>

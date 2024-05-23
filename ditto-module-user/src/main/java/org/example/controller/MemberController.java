@@ -68,4 +68,12 @@ public class MemberController {
         return new BaseResponse<>(memberService.getOneMember(memberId));
     }
 
+    @GetMapping("/members")
+    @Operation(summary = "사용자 정보 조회", description = "해당 사용자 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "성공")
+    public BaseResponse<MemberDto> getMemberByEmail(@Parameter(description = "조회할 사용자 아이디") @RequestParam("memberEmail")String memberEmail){
+        log.info("제발 좀 되라 이자식아");
+        return new BaseResponse<>(memberService.getMemberByEmail(memberEmail));
+    }
+
 }

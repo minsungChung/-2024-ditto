@@ -43,6 +43,14 @@ spring:
           timeout: 5000
           write-timeout: 5000
     auth-code-expiration-millis: 1800000
+
+  thymeleaf:
+    enabled: true
+    cache: false
+    check-template-location: false
+    prefix: classpath:/templates/
+    suffix: .html
+
 #  redis:
 #    pool:
 #      min-idle: 0

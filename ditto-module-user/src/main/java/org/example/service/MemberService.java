@@ -18,4 +18,6 @@ public interface MemberService {
     MemberDto getOneMember(Long memberId);
 
     Member findById(Long memberId);
+
+    MemberDto getMemberByEmail(String memberEmail);
 }

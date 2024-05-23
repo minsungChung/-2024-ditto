@@ -86,15 +86,13 @@ public class AuthFilter implements GatewayFilter {
     private void updateRequest(ServerWebExchange exchange, String token) {
         Claims claims = jwtTokenProvider.parseClaims(token);
         exchange.getRequest().mutate()
-                .header("memberId", String.valueOf(claims.get("email")))
+                .header("memberEmail", String.valueOf(claims.get("email")))
                 .build();
     }
 
     private void updateRequestWithNewToken(ServerWebExchange exchange, String newAccessToken) {
         exchange.getResponse().addCookie(ResponseCookie.from("Authorization", newAccessToken)
                 .path("/")
-                .httpOnly(true)
-                .secure(true)
                 .maxAge(jwtTokenProvider.getValidityInMilliseconds()/1000)
                 .build());
 

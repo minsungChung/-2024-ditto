@@ -9,15 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    PostResponse uploadPost(Long memberId, PostRequest postRequest);
+    PostResponse uploadPost(String email, PostRequest postRequest);
 
-    PostResponse getPost(Long memberId, Long postId);
+    PostResponse getPost(String email, Long postId);
 
-    PostSimpleRes updatePost(Long memberId, Long postId, PostRequest postRequest);
+    PostSimpleRes updatePost(String email, Long postId, PostRequest postRequest);
 
-    PostSimpleRes deletePost(Long memberId, Long postId);
+    PostSimpleRes deletePost(String email, Long postId);
 
-    PostLikeResponse pushPostLike(Long memberId, Long postId);
+    PostLikeResponse pushPostLike(String email, Long postId);
 
     PostDto getOnePost(Long postId);
 
