@@ -6,6 +6,7 @@ import org.example.controller.api.MemberApi;
 import org.example.controller.api.NewsfeedApi;
 import org.example.controller.api.StockApi;
 import org.example.dto.response.PostSimpleRes;
+import org.example.global.dto.MemberDto;
 import org.example.global.dto.NewsfeedPostRequest;
 import org.example.dto.response.PostResponse;
 import org.example.global.dto.PostDto;
@@ -37,34 +38,41 @@ public class PostServiceImpl implements PostService {
     private final MemberApi memberApi;
 
     @Transactional
-    public PostResponse uploadPost(Long memberId, PostRequest postRequest) {
+    public PostResponse uploadPost(String memberEmail, PostRequest postRequest) {
         String stockName = stockApi.findByStockId(postRequest.getStockId()).getResult().getStockName();
-        String memberName = memberApi.findById(memberId).getResult().getMemberName();
+        MemberDto result = memberApi.findByEmail(memberEmail).getResult();
+
+        log.info(stockName);
+        log.info(result.getMemberName());
 
         Post post = Post.builder()
-                .memberId(memberId)
-                .memberName(memberName)
+                .memberId(result.getMemberId())
+                .memberName(result.getMemberName())
                 .stockId(postRequest.getStockId())
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .build();
         postRepository.save(post);
 
-        followRepository.findAllByToMemberId(memberId).forEach(
-                follow -> {
-                    NewsfeedPostRequest newsfeedPostRequest = NewsfeedPostRequest.builder()
-                            .feedMemberId(follow.getFromMemberId())
-                            .postId(post.getId())
-                            .writerMemberId(post.getMemberId()).build();
-                    newsfeedApi.createNewsfeedPost(newsfeedPostRequest);
-                }
-        );
+        log.info("여기");
 
-        return new PostResponse(post, stockName, memberName);
+//        followRepository.findAllByToMemberId(result.getMemberId()).forEach(
+//                follow -> {
+//                    NewsfeedPostRequest newsfeedPostRequest = NewsfeedPostRequest.builder()
+//                            .feedMemberId(follow.getFromMemberId())
+//                            .postId(post.getId())
+//                            .writerMemberId(post.getMemberId()).build();
+//                    newsfeedApi.createNewsfeedPost(newsfeedPostRequest);
+//                }
+//        );
+
+        return new PostResponse(post, stockName, result.getMemberName());
     }
 
     @Transactional
-    public PostResponse getPost(Long memberId, Long postId){
+    public PostResponse getPost(String email, Long postId){
+        MemberDto result = memberApi.findByEmail(email).getResult();
+
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -73,7 +81,7 @@ public class PostServiceImpl implements PostService {
         }
 
         // 조회한 사람이 자신이 아닐 때 조회수 1 높임
-        if (!memberId.equals(post.getMemberId())){
+        if (!result.getMemberId().equals(post.getMemberId())){
             post.addView();
         }
 
@@ -83,7 +91,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public PostSimpleRes updatePost(Long memberId, Long postId, PostRequest postRequest){
+    public PostSimpleRes updatePost(String email, Long postId, PostRequest postRequest){
+        MemberDto result = memberApi.findByEmail(email).getResult();
+
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -91,7 +101,7 @@ public class PostServiceImpl implements PostService {
             throw new NoSuchPostException();
         }
 
-        if (memberId.equals(post.getMemberId())){
+        if (result.getMemberId().equals(post.getMemberId())){
             post.updatePost(postRequest.getTitle(), postRequest.getContent());
         } else{
             throw new InvalidAccessException();
@@ -101,7 +111,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public PostSimpleRes deletePost(Long memberId, Long postId){
+    public PostSimpleRes deletePost(String email, Long postId){
+        MemberDto result = memberApi.findByEmail(email).getResult();
+
         Post post = postRepository.findById(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
@@ -109,7 +121,7 @@ public class PostServiceImpl implements PostService {
             throw new NoSuchPostException();
         }
 
-        if (memberId.equals(post.getMemberId())){
+        if (result.getMemberId().equals(post.getMemberId())){
             post.deletePost();
         } else{
             throw new InvalidAccessException();
@@ -120,14 +132,16 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Retry
-    public PostLikeResponse pushPostLike(Long memberId, Long postId){
+    public PostLikeResponse pushPostLike(String email, Long postId){
+        MemberDto result = memberApi.findByEmail(email).getResult();
+
         Post post = postRepository.findByIdWithLock(postId).orElseThrow(() -> {
             throw new NoSuchPostException();
         });
         if (isPostDeleted(post)) {
             throw new NoSuchPostException();
         }
-        PostLike postLike = postLikeRepository.findByMemberIdAndPostId(memberId, postId).orElse(null);
+        PostLike postLike = postLikeRepository.findByMemberIdAndPostId(result.getMemberId(), postId).orElse(null);
         boolean flag = true;
 
         if (postLike != null) {
@@ -141,7 +155,7 @@ public class PostServiceImpl implements PostService {
             }
         } else {
             postLike = PostLike.builder()
-                    .memberId(memberId)
+                    .memberId(result.getMemberId())
                     .postId(postId).build();
             postLikeRepository.save(postLike);
             post.addLike();
@@ -149,9 +163,9 @@ public class PostServiceImpl implements PostService {
 
         if (flag) {
             Long receiverId = post.getMemberId();
-            followRepository.findAllByToMemberId(memberId).forEach(
+            followRepository.findAllByToMemberId(result.getMemberId()).forEach(
                     follow -> {
-                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMemberId(), memberId, receiverId, "POSTLIKE", post.getTitle());
+                        NewsfeedRequest newsfeedRequest = new NewsfeedRequest(follow.getFromMemberId(), result.getMemberId(), receiverId, "POSTLIKE", post.getTitle());
                         newsfeedApi.createNewsfeed(newsfeedRequest);
                     }
             );

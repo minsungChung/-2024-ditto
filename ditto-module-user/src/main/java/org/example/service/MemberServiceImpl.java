@@ -67,6 +67,18 @@ public class MemberServiceImpl implements MemberService {
                 .status(member.getStatus()).build();
     }
 
+    public MemberDto getMemberByEmail(String memberEmail){
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NoSuchMemberException::new);
+        log.info(member.getMemberName());
+        return MemberDto.builder()
+                .memberId(member.getId())
+                .memberName(member.getMemberName())
+                .email(member.getEmail())
+                .profileImage(member.getProfileImage())
+                .bio(member.getBio())
+                .status(member.getStatus()).build();
+    }
+
     @Transactional
     public UpdateMemberResponse updateMemberInfo(Long myId, Long memberId, MemberInfoRequest memberInfoRequest){
         Member findMember = memberRepository.findById(memberId).orElseThrow(() -> {

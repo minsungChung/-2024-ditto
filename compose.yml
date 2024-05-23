@@ -17,14 +17,14 @@ services:
 #      - ./jenkins:/var/jenkins_home
 #    ports:
 #      - "8088:8080"
-
-#  activity:
-#    container_name: activity
-#    build:
-#      context: ./ditto-module-activity
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8081:8081"
+#
+  activity:
+    container_name: activity
+    build:
+      context: ./ditto-module-activity
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
 
   gateway:
     container_name: gateway
@@ -57,14 +57,14 @@ services:
 #      - |
 #        ./wait-for-it.sh gateway:8083 -s -t 100
 #        java -jar /newsfeed.jar
-
-#  stock:
-#    container_name: stock
-#    build:
-#      context: ./ditto-module-stock
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8091:8091"
+#
+  stock:
+    container_name: stock
+    build:
+      context: ./ditto-module-stock
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
 #    depends_on:
 #      - newsfeed
 #    command:
@@ -81,7 +81,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8087:8087"
-#    depends_on:
+##    depends_on:
 #      - stock
 #    command:
 #      - bash

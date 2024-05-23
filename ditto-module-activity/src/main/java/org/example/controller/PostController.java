@@ -23,9 +23,10 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/")
-    public BaseResponse<PostResponse> uploadPost(@RequestHeader("memberId") Long memberId, @Valid @RequestBody PostRequest postRequest){
-        return new BaseResponse<>(postService.uploadPost(memberId, postRequest));
+    @PostMapping
+    public BaseResponse<PostResponse> uploadPost(@RequestHeader("memberEmail") String email, @Valid @RequestBody PostRequest postRequest){
+        log.info("화긴");
+        return new BaseResponse<>(postService.uploadPost(email, postRequest));
     }
 
 //    @GetMapping("/{postId}")
@@ -34,18 +35,18 @@ public class PostController {
 //    }
 
     @PatchMapping("/{postId}")
-    public BaseResponse<PostSimpleRes> updatePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
-        return new BaseResponse<>(postService.updatePost(memberId, postId, postRequest));
+    public BaseResponse<PostSimpleRes> updatePost(@RequestHeader("memberEmail") String email, @PathVariable("postId") Long postId, @Valid @RequestBody PostRequest postRequest){
+        return new BaseResponse<>(postService.updatePost(email, postId, postRequest));
     }
 
     @DeleteMapping("/{postId}")
-    public BaseResponse<PostSimpleRes> deletePost(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId){
-        return new BaseResponse<>(postService.deletePost(memberId, postId));
+    public BaseResponse<PostSimpleRes> deletePost(@RequestHeader("memberEmail") String email, @PathVariable("postId") Long postId){
+        return new BaseResponse<>(postService.deletePost(email, postId));
     }
 
     @PostMapping("/{postId}/like")
-    public BaseResponse<PostLikeResponse> pushPostLike(@RequestHeader("memberId") Long memberId, @PathVariable("postId") Long postId){
-        return new BaseResponse<>(postService.pushPostLike(memberId, postId));
+    public BaseResponse<PostLikeResponse> pushPostLike(@RequestHeader("memberEmail") String email, @PathVariable("postId") Long postId){
+        return new BaseResponse<>(postService.pushPostLike(email, postId));
     }
 
     @GetMapping("/{postId}")

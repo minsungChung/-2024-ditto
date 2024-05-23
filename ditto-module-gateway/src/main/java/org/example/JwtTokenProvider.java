@@ -20,8 +20,8 @@ public class JwtTokenProvider {
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey = "secretKey";
-    private final Long validityInMilliseconds = 1000L * 5;
-    private final Long refreshTokenValidityInMilliseconds = 1000L * 60;
+    private final Long validityInMilliseconds = 1000L * 500;
+    private final Long refreshTokenValidityInMilliseconds = 1000L * 6000;
 //    private final RedisUtil redisUtil;
 
     @PostConstruct
